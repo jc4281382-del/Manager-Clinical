@@ -161,18 +161,15 @@
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Criar Conta';
                 } else {
-                    // Cuidamos de inserir o profissional na tabela professionals se precisar, 
-                    // Mas podemos fazer no banco via trigger ou no cliente. Vamos fazer no cliente agora para garantir.
-                    if(data.user) {
-                        await supabase.from('professionals').insert([{
-                            user_id: data.user.id,
-                            full_name: name,
-                            email: email
-                        }]);
-                        
+                    if (data.session) {
                         Swal.fire({ icon: 'success', title: 'Conta Criada!', text: 'Bem-vindo ao Manager Clinic.' }).then(() => {
                             window.location.href = 'dashboard.html';
                         });
+                    } else {
+                        Swal.fire({ icon: 'info', title: 'Quase lá!', text: 'Verifique seu e-mail para confirmar a conta.' });
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = 'Criar Conta';
+                        toggleModeBtn.click(); // Switch to login
                     }
                 }
             }

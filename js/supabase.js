@@ -1,6 +1,6 @@
 const supabaseUrl = 'https://jczxpbpzmxwmwyvtyzpi.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjenhwYnB6bXh3bXd5dnR5enBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NjYzMjgsImV4cCI6MjA5MzE0MjMyOH0.fjP_3i2z_1_zeZCr7BLfdhp5SF7J4J1Yxb_XjXpY0TA';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentProfessionalId = null;
 let currentProfessionalName = "";
