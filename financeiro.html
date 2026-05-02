@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>CliniFlow - Relatórios Financeiros</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#f7fafa",
+                        "on-surface-variant": "#3f484a",
+                        "on-secondary-container": "#00734d",
+                        "tertiary-fixed": "#ffdbc9",
+                        "on-error": "#ffffff",
+                        "secondary": "#006c48",
+                        "surface-container-highest": "#e0e3e3",
+                        "primary": "#005258",
+                        "surface-dim": "#d8dada",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#002022",
+                        "on-tertiary-fixed": "#321200",
+                        "on-surface": "#191c1d",
+                        "background": "#f7fafa",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e0e3e3",
+                        "secondary-fixed": "#93f6c4",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#2d3131",
+                        "surface-container-high": "#e6e9e9",
+                        "inverse-primary": "#8bd2da",
+                        "on-background": "#191c1d",
+                        "surface-container-low": "#f2f4f4",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#703c1a",
+                        "secondary-fixed-dim": "#77d9a9",
+                        "outline": "#6f797a",
+                        "on-primary-fixed-variant": "#004f55",
+                        "on-tertiary-fixed-variant": "#6c3918",
+                        "inverse-on-surface": "#eff1f1",
+                        "surface-tint": "#15686f",
+                        "primary-fixed": "#a6eff6",
+                        "primary-container": "#1a6b72",
+                        "surface-bright": "#f7fafa",
+                        "primary-fixed-dim": "#8bd2da",
+                        "tertiary-container": "#8c532f",
+                        "secondary-container": "#93f6c4",
+                        "tertiary-fixed-dim": "#ffb68c",
+                        "surface-container": "#eceeee",
+                        "on-secondary-fixed": "#002113",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#ffd4bd",
+                        "outline-variant": "#bec8c9",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-primary-container": "#a1e9f1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "display": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+    <!-- Supabase & SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/financeiro.js"></script>
+</head>
+
+<body class="bg-background text-on-surface min-h-screen pb-24">
+    <!-- TopAppBar -->
+    <header
+        class="flex justify-between items-center w-full px-6 py-3 sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-[#EEF2F5] dark:border-slate-800 shadow-[0px_4px_12px_rgba(28,43,51,0.05)]">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container border-2 border-primary-container">
+                <img alt="Doctor Profile Picture" class="w-full h-full object-cover"
+                    data-alt="A professional portrait of a confident male doctor in a clean clinical environment. He is wearing a white lab coat over a professional shirt, with a stethoscope around his neck. The lighting is soft and bright, following a modern healthcare aesthetic with teal and white tones. The background is a blurred medical office, emphasizing a clean and trustworthy atmosphere."
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-1yG92WCjg2fAq0EHsBkA-l511Kf1U5la-UAzyCiBCK7fse8e4WCC-zDW95vqG_u8oYajtUIJ-aJXFvVB6SV6zCbkNNDukqnumdHEz_TIiASWiBhIqzgU-zWO5_gEeWnYjQBmrsMvlXKnvQtsNob3KC0juZMhmzcNQsLA94T_G6RglrJlDdvrmfQuvKFTIGTBNALJyWTl3IvYqw0zjNoq3OXI1jMx4Bja0xBdd40R2A5_lAr67LJ6Za9_AyrcokPMYSN6BfOQahkL" />
+            </div>
+            <span
+                class="text-xl font-extrabold text-[#1A6B72] dark:text-teal-400 font-manrope tracking-tight">CliniFlow</span>
+        </div>
+        <button
+            class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors active:scale-95 duration-200">
+            <span class="material-symbols-outlined text-slate-500 dark:text-slate-400"
+                data-icon="notifications">notifications</span>
+        </button>
+    </header>
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Page Header & Period Selector -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+            <div>
+                <h1 class="text-2xl font-extrabold text-primary mb-1">Relatórios Financeiros</h1>
+                <p class="text-on-surface-variant text-sm">Visualize o desempenho da sua clínica em tempo real.</p>
+            </div>
+            <div class="inline-flex p-1 bg-surface-container-high rounded-xl">
+                <button
+                    class="px-6 py-2 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors">Hoje</button>
+                <button
+                    class="px-6 py-2 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors">Semana</button>
+                <button class="px-6 py-2 text-sm font-semibold bg-white text-primary rounded-lg shadow-sm">Mês</button>
+            </div>
+        </div>
+        <!-- Bento Grid Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <!-- Hero Metric Card -->
+            <div
+                class="md:col-span-8 bg-white p-8 rounded-xl shadow-[0px_4px_12px_rgba(28,43,51,0.05)] border border-[#EEF2F5] flex flex-col justify-between relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-9xl text-primary" data-icon="payments">payments</span>
+                </div>
+                <div>
+                    <span class="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Faturamento
+                        Realizado</span>
+                    <div class="flex items-baseline gap-2 mt-2">
+                        <span class="text-4xl md:text-6xl font-extrabold text-primary-container">R$ 42.850,00</span>
+                        <span class="text-secondary font-bold flex items-center text-sm">
+                            <span class="material-symbols-outlined text-base mr-1"
+                                data-icon="trending_up">trending_up</span>
+                            +12%
+                        </span>
+                    </div>
+                </div>
+                <div class="mt-8 flex gap-4">
+                    <div class="flex flex-col">
+                        <span class="text-xs text-on-surface-variant font-medium">Meta Mensal</span>
+                        <div class="w-48 h-2 bg-surface-container rounded-full mt-2">
+                            <div class="h-full bg-secondary rounded-full" style="width: 78%;"></div>
+                        </div>
+                        <span class="text-[10px] mt-1 text-on-surface-variant">78% da meta atingida</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Secondary Metric Card -->
+            <div
+                class="md:col-span-4 bg-white p-8 rounded-xl shadow-[0px_4px_12px_rgba(28,43,51,0.05)] border border-[#EEF2F5] flex flex-col justify-center bg-gradient-to-br from-white to-error-container/10">
+                <div class="w-12 h-12 bg-error-container text-error rounded-xl flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined" data-icon="cancel_presentation">cancel_presentation</span>
+                </div>
+                <span class="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Receita Perdida</span>
+                <div class="mt-2">
+                    <span class="text-3xl font-extrabold text-error">R$ 3.120,00</span>
+                    <p class="text-xs text-on-surface-variant mt-2">Relativo a cancelamentos e faltas sem aviso prévio.
+                    </p>
+                </div>
+                <button class="mt-6 text-sm font-bold text-error flex items-center hover:underline">
+                    Ver Detalhes <span class="material-symbols-outlined text-sm ml-1"
+                        data-icon="chevron_right">chevron_right</span>
+                </button>
+            </div>
+            <!-- Chart Section -->
+            <div
+                class="md:col-span-7 bg-white p-8 rounded-xl shadow-[0px_4px_12px_rgba(28,43,51,0.05)] border border-[#EEF2F5]">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="font-bold text-on-surface text-lg">Faturamento Semanal</h3>
+                    <div class="flex gap-2">
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-2 h-2 rounded-full bg-primary-container"></div>
+                            <span class="text-[10px] font-bold text-on-surface-variant uppercase">Realizado</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Custom CSS Bar Chart -->
+                <div class="h-64 flex items-end justify-between gap-2 px-2">
+                    <div class="flex flex-col items-center gap-2 w-full">
+                        <div class="w-full bg-primary-container/20 hover:bg-primary-container rounded-t-lg transition-all"
+                            style="height: 40%;"></div>
+                        <span class="text-[10px] font-bold text-on-surface-variant">SEG</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 w-full">
+                        <div class="w-full bg-primary-container/20 hover:bg-primary-container rounded-t-lg transition-all"
+                            style="height: 65%;"></div>
+                        <span class="text-[10px] font-bold text-on-surface-variant">TER</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 w-full">
+                        <div class="w-full bg-primary-container/20 hover:bg-primary-container rounded-t-lg transition-all"
+                            style="height: 55%;"></div>
+                        <span class="text-[10px] font-bold text-on-surface-variant">QUA</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 w-full">
+                        <div class="w-full bg-primary-container hover:bg-primary-container rounded-t-lg transition-all"
+                            style="height: 90%;"></div>
+                        <span class="text-[10px] font-bold text-on-surface-variant">QUI</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 w-full">
+                        <div class="w-full bg-primary-container/20 hover:bg-primary-container rounded-t-lg transition-all"
+                            style="height: 75%;"></div>
+                        <span class="text-[10px] font-bold text-on-surface-variant">SEX</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 w-full">
+                        <div class="w-full bg-primary-container/20 hover:bg-primary-container rounded-t-lg transition-all"
+                            style="height: 30%;"></div>
+                        <span class="text-[10px] font-bold text-on-surface-variant">SÁB</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Breakdown Section -->
+            <div
+                class="md:col-span-5 bg-white p-8 rounded-xl shadow-[0px_4px_12px_rgba(28,43,51,0.05)] border border-[#EEF2F5]">
+                <h3 class="font-bold text-on-surface text-lg mb-8">Status de Consultas</h3>
+                <div class="space-y-6">
+                    <!-- Agendadas -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-on-surface">Agendadas</span>
+                            <span class="text-sm font-bold text-on-surface">142</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+                            <div class="h-full bg-primary-container rounded-full" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <!-- Realizadas -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-on-surface">Realizadas</span>
+                            <span class="text-sm font-bold text-secondary">118</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+                            <div class="h-full bg-secondary rounded-full" style="width: 83%;"></div>
+                        </div>
+                    </div>
+                    <!-- Canceladas -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-on-surface">Canceladas</span>
+                            <span class="text-sm font-bold text-tertiary">16</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+                            <div class="h-full bg-tertiary-container rounded-full" style="width: 11%;"></div>
+                        </div>
+                    </div>
+                    <!-- Faltas -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-on-surface">Faltas</span>
+                            <span class="text-sm font-bold text-error">8</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+                            <div class="h-full bg-error rounded-full" style="width: 6%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="mt-10 p-4 rounded-xl bg-surface-container-low border border-outline-variant flex items-center gap-4">
+                    <span class="material-symbols-outlined text-primary-container"
+                        data-icon="lightbulb">lightbulb</span>
+                    <p class="text-xs text-on-surface-variant">Insights: Taxa de comparecimento subiu 4% em relação ao
+                        mês anterior.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- BottomNavBar -->
+    <nav
+        class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-white/80 backdrop-blur-md border-t border-[#EEF2F5] dark:border-slate-800 shadow-[0px_-4px_12px_rgba(28,43,51,0.05)] rounded-t-2xl">
+        <a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-[#1A6B72] dark:hover:text-teal-300 transition-colors active:scale-90 duration-150"
+            href="#">
+            <span class="material-symbols-outlined" data-icon="home">home</span>
+            <span class="font-manrope text-[11px] font-medium">Home</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-[#1A6B72] dark:hover:text-teal-300 transition-colors active:scale-90 duration-150"
+            href="#">
+            <span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+            <span class="font-manrope text-[11px] font-medium">Agenda</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-[#1A6B72] dark:hover:text-teal-300 transition-colors active:scale-90 duration-150"
+            href="#">
+            <span class="material-symbols-outlined" data-icon="groups">groups</span>
+            <span class="font-manrope text-[11px] font-medium">Pacientes</span>
+        </a>
+        <a class="flex flex-col items-center justify-center bg-teal-50 dark:bg-teal-900/30 text-[#1A6B72] dark:text-teal-300 rounded-xl px-4 py-1.5 active:scale-90 duration-150"
+            href="#">
+            <span class="material-symbols-outlined" data-icon="bar_chart"
+                style="font-variation-settings: 'FILL' 1;">bar_chart</span>
+            <span class="font-manrope text-[11px] font-medium">Relatórios</span>
+        </a>
+    </nav>
+</body>
+
+</html>
