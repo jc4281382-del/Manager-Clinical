@@ -108,12 +108,21 @@ async function loadDashboard() {
                 </select>
             </td>
             <td class="px-6 py-5">
-                <button class="text-primary hover:underline font-bold text-sm">Ver</button>
+                <button class="text-primary hover:underline font-bold text-sm" onclick='editAppointment("\${app.id}")'>Editar</button>
             </td>
         </tr>
         \`;
         tbody.insertAdjacentHTML('beforeend', tr);
     });
+
+    window.currentAppointmentsData = appointments;
+}
+
+window.editAppointment = function(id) {
+    const app = window.currentAppointmentsData.find(a => a.id === id);
+    if(app && window.openAppointmentModal) {
+        window.openAppointmentModal(app);
+    }
 }
 
 window.updateAppointmentStatus = async function(id, newStatus) {

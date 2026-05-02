@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#005258">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#f7fafa",
+                        "on-surface-variant": "#3f484a",
+                        "on-secondary-container": "#00734d",
+                        "tertiary-fixed": "#ffdbc9",
+                        "on-error": "#ffffff",
+                        "secondary": "#006c48",
+                        "surface-container-highest": "#e0e3e3",
+                        "primary": "#005258",
+                        "surface-dim": "#d8dada",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#002022",
+                        "on-tertiary-fixed": "#321200",
+                        "on-surface": "#191c1d",
+                        "background": "#f7fafa",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e0e3e3",
+                        "secondary-fixed": "#93f6c4",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#2d3131",
+                        "surface-container-high": "#e6e9e9",
+                        "inverse-primary": "#8bd2da",
+                        "on-background": "#191c1d",
+                        "surface-container-low": "#f2f4f4",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#703c1a",
+                        "secondary-fixed-dim": "#77d9a9",
+                        "outline": "#6f797a",
+                        "on-primary-fixed-variant": "#004f55",
+                        "on-tertiary-fixed-variant": "#6c3918",
+                        "inverse-on-surface": "#eff1f1",
+                        "surface-tint": "#15686f",
+                        "primary-fixed": "#a6eff6",
+                        "primary-container": "#1a6b72",
+                        "surface-bright": "#f7fafa",
+                        "primary-fixed-dim": "#8bd2da",
+                        "tertiary-container": "#8c532f",
+                        "secondary-container": "#93f6c4",
+                        "tertiary-fixed-dim": "#ffb68c",
+                        "surface-container": "#eceeee",
+                        "on-secondary-fixed": "#002113",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#ffd4bd",
+                        "outline-variant": "#bec8c9",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-primary-container": "#a1e9f1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "display": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #f7fafa;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+    <!-- Supabase & SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/modal.js"></script>`n    <script src="js/sidebar.js"></script>
+    <script src="js/dashboard.js"></script>
+</head>
+
+<body class="text-on-surface">
+    <!-- TopAppBar Shell -->
+    <header
+        class="flex justify-between items-center w-full px-6 py-3 sticky top-0 z-50 bg-white shadow-[0px_4px_12px_rgba(28,43,51,0.05)] border-b border-[#EEF2F5]">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full overflow-hidden bg-slate-200 border-2 border-primary-container">
+                <img alt="Doctor Profile" class="w-full h-full object-cover"
+                    data-alt="A professional portrait of a confident male doctor in his late 30s wearing a clean white medical coat and a stethoscope around his neck. He is standing in a bright, modern medical clinic with soft blue and teal accents in the background. The lighting is soft and airy, creating a professional and trustworthy clinical atmosphere that aligns with a high-end health dashboard aesthetic."
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRBFOcH1cu5mLHNyceo1LksepP1WgLhsi1_8Hz_muOdi567JQk4AB7OT9ocp8LmRYNvFUNO76vCdxwnM6c7zCNN5Habofx0MDq79tn4rUcDdeGZ1xWiESRtbIJpSLSJJyaBzndAduZmUJEs84fnla36-qj1nKCipOc0Pfv6dhuS1flAEpLnGpwD7LT9V4pexCpRT7T6Jeyz3mcLeDoeivbA5lgKiCmBNavHp04HKC2AKmYfIOb8eMHXNclE4z13YLr0ieBkfI9v2Ri" />
+            </div>
+            <span class="text-xl font-extrabold text-[#1A6B72] font-manrope tracking-tight">Manager Clinic</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="p-2 rounded-full hover:bg-slate-50 transition-colors active:scale-95 duration-200">
+                <span class="material-symbols-outlined text-slate-500" data-icon="notifications">notifications</span>
+            </button>
+        </div>
+    </header>
+    <main class="max-w-7xl mx-auto px-6 pt-8 pb-32">
+        <!-- Dashboard Header -->
+        <section class="mb-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-extrabold text-primary tracking-tight">Olá, Dr. Ricardo Silveira</h1>
+                    <p class="text-on-surface-variant font-medium">Segunda-feira, 24 de Outubro de 2023</p>
+                </div>
+                <button
+                    class="bg-primary-container text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary-container/20 active:scale-95 transition-transform">
+                    <span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                    Novo Agendamento
+                </button>
+            </div>
+        </section>
+        <!-- Summary Bento Grid -->
+        <section class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
+            <!-- Pacientes Hoje -->
+            <div
+                class="bg-white p-5 rounded-xl shadow-[0px_4px_12px_rgba(28,43,51,0.05)] border border-surface-container flex flex-col justify-between">
+                <span class="text-on-surface-variant text-sm font-semibold">Pacientes hoje</span>
+                <div class="mt-4 flex items-baseline gap-2">
+                    <span class="text-3xl font-extrabold text-primary">12</span>
+                    <span class="text-xs text-secondary font-bold flex items-center"><span
+                            class="material-symbols-outlined text-xs" data-icon="trending_up">trending_up</span>
+                        15%</span>
+                </div>
+            </div>
+            <!-- Faturamento -->
+            <div
+                class="bg-white p-5 rounded-xl shadow-[0px_4px_12px_rgba(28,43,51,0.05)] border border-surface-container flex flex-col justify-between md:col-span-1">
+                <span class="text-on-surface-variant text-sm font-semibold">Faturamento previsto</span>
+                <div class="mt-4">
+                    <span class="text-2xl font-extrabold text-primary tracking-tight">R$ 3.450</span>
+                </div>
+            </div>
+            <!-- Realizados -->
+            <div
+                class="bg-white p-5 rounded-xl shadow-[0px_4px_12px_rgba(28,43,51,0.05)] border border-surface-container border-l-4 border-l-secondary flex flex-col justify-between">
+                <span class="text-on-surface-variant text-sm font-semibold">Realizados</span>
+                <div class="mt-4">
+                    <span class="text-3xl font-extrabold text-secondary">08</span>
+                </div>
+            </div>
+            <!-- Cancelados -->
+            <div
+                class="bg-white p-5 rounded-xl shadow-[0px_4px_12px_rgba(28,43,51,0.05)] border border-surface-container border-l-4 border-l-error flex flex-col justify-between">
+                <span class="text-on-surface-variant text-sm font-semibold">Cancelados</span>
+                <div class="mt-4">
+                    <span class="text-3xl font-extrabold text-error">01</span>
+                </div>
+            </div>
+            <!-- Não Compareceram -->
+            <div
+                class="bg-white p-5 rounded-xl shadow-[0px_4px_12px_rgba(28,43,51,0.05)] border border-surface-container border-l-4 border-l-slate-400 flex flex-col justify-between">
+                <span class="text-on-surface-variant text-sm font-semibold">Não compareceram</span>
+                <div class="mt-4">
+                    <span class="text-3xl font-extrabold text-slate-500">03</span>
+                </div>
+            </div>
+        </section>
+        <!-- Appointments List Section -->
+        <section
+            class="bg-white rounded-xl shadow-[0px_4px_12px_rgba(28,43,51,0.05)] border border-[#EEF2F5] overflow-hidden">
+            <div class="px-6 py-5 border-b border-[#EEF2F5] flex justify-between items-center">
+                <h2 class="text-lg font-bold text-primary">Compromissos de Hoje</h2>
+                <div class="flex gap-2">
+                    <button class="p-2 rounded-lg border border-outline-variant hover:bg-slate-50 transition-colors">
+                        <span class="material-symbols-outlined text-on-surface-variant"
+                            data-icon="filter_list">filter_list</span>
+                    </button>
+                    <button class="p-2 rounded-lg border border-outline-variant hover:bg-slate-50 transition-colors">
+                        <span class="material-symbols-outlined text-on-surface-variant" data-icon="search">search</span>
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr
+                            class="bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-wider">
+                            <th class="px-6 py-4">Horário</th>
+                            <th class="px-6 py-4">Paciente</th>
+                            <th class="px-6 py-4">Tipo</th>
+                            <th class="px-6 py-4">Valor</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#EEF2F5]">
+                        <!-- Row 1: Realizado -->
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-5 font-bold text-primary">08:00</td>
+                            <td class="px-6 py-5">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-primary font-bold text-xs">
+                                        AM</div>
+                                    <span class="font-semibold text-on-surface">Ana Maria Silva</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span
+                                    class="text-sm font-medium px-2 py-1 rounded bg-surface-container text-on-surface-variant">Consulta</span>
+                            </td>
+                            <td class="px-6 py-5 font-semibold">R$ 350,00</td>
+                            <td class="px-6 py-5">
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-secondary/10 text-secondary border border-secondary/20">
+                                    Realizado
+                                </span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <button class="text-primary hover:underline font-bold text-sm">Prontuário</button>
+                            </td>
+                        </tr>
+                        <!-- Row 2: Confirmado -->
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-5 font-bold text-primary">09:30</td>
+                            <td class="px-6 py-5">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs">
+                                        JS</div>
+                                    <span class="font-semibold text-on-surface">João Santos</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span
+                                    class="text-sm font-medium px-2 py-1 rounded bg-surface-container text-on-surface-variant">Retorno</span>
+                            </td>
+                            <td class="px-6 py-5 font-semibold">R$ 0,00</td>
+                            <td class="px-6 py-5">
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-600 border border-blue-200">
+                                    Confirmado
+                                </span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <button class="text-primary hover:underline font-bold text-sm">Check-in</button>
+                            </td>
+                        </tr>
+                        <!-- Row 3: Agendado -->
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-5 font-bold text-primary">11:00</td>
+                            <td class="px-6 py-5">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-xs">
+                                        MC</div>
+                                    <span class="font-semibold text-on-surface">Mariana Costa</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span
+                                    class="text-sm font-medium px-2 py-1 rounded bg-surface-container text-on-surface-variant">Consulta</span>
+                            </td>
+                            <td class="px-6 py-5 font-semibold">R$ 450,00</td>
+                            <td class="px-6 py-5">
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                                    Agendado
+                                </span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <button class="text-primary hover:underline font-bold text-sm">Editar</button>
+                            </td>
+                        </tr>
+                        <!-- Row 4: Cancelado -->
+                        <tr class="hover:bg-slate-50/50 transition-colors opacity-75">
+                            <td class="px-6 py-5 font-bold text-primary">14:00</td>
+                            <td class="px-6 py-5">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-700 font-bold text-xs">
+                                        RP</div>
+                                    <span class="font-semibold text-on-surface">Roberto Pereira</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span
+                                    class="text-sm font-medium px-2 py-1 rounded bg-surface-container text-on-surface-variant">Consulta</span>
+                            </td>
+                            <td class="px-6 py-5 font-semibold">R$ 350,00</td>
+                            <td class="px-6 py-5">
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-error/10 text-error border border-error/20">
+                                    Cancelado
+                                </span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <button class="text-primary hover:underline font-bold text-sm">Remarcar</button>
+                            </td>
+                        </tr>
+                        <!-- Row 5: Faltou -->
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-5 font-bold text-primary">15:30</td>
+                            <td class="px-6 py-5">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-xs">
+                                        FB</div>
+                                    <span class="font-semibold text-on-surface">Fernanda Barbosa</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span
+                                    class="text-sm font-medium px-2 py-1 rounded bg-surface-container text-on-surface-variant">Retorno</span>
+                            </td>
+                            <td class="px-6 py-5 font-semibold">R$ 0,00</td>
+                            <td class="px-6 py-5">
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-200 text-slate-700 border border-slate-300">
+                                    Faltou
+                                </span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <button class="text-primary hover:underline font-bold text-sm">Notificar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="px-6 py-4 bg-surface-container-low border-t border-[#EEF2F5] text-center">
+                <button class="text-sm font-bold text-primary hover:text-primary-container transition-colors">Ver todos
+                    os compromissos</button>
+            </div>
+        </section>
+    </main>
+    <!-- BottomNavBar Shell -->
+    <nav
+        class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-white/80 backdrop-blur-md border-t border-[#EEF2F5] shadow-[0px_-4px_12px_rgba(28,43,51,0.05)] rounded-t-2xl">
+        <!-- Home (Active) -->
+        <a class="flex flex-col items-center justify-center bg-teal-50 text-[#1A6B72] rounded-xl px-4 py-1.5 active:scale-90 duration-150 transition-transform"
+            href="dashboard.html">
+            <span class="material-symbols-outlined text-[24px]" data-icon="home" data-weight="fill"
+                style="font-variation-settings: 'FILL' 1;">home</span>
+            <span class="font-manrope text-[11px] font-medium">Home</span>
+        </a>
+        <!-- Agenda -->
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-1.5 active:scale-90 duration-150 transition-transform hover:text-[#1A6B72] transition-colors"
+            href="agenda.html">
+            <span class="material-symbols-outlined text-[24px]" data-icon="calendar_month">calendar_month</span>
+            <span class="font-manrope text-[11px] font-medium">Agenda</span>
+        </a>
+        <!-- Pacientes -->
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-1.5 active:scale-90 duration-150 transition-transform hover:text-[#1A6B72] transition-colors"
+            href="pacientes.html">
+            <span class="material-symbols-outlined text-[24px]" data-icon="groups">groups</span>
+            <span class="font-manrope text-[11px] font-medium">Pacientes</span>
+        </a>
+        <!-- Relatórios -->
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-1.5 active:scale-90 duration-150 transition-transform hover:text-[#1A6B72] transition-colors"
+            href="financeiro.html">
+            <span class="material-symbols-outlined text-[24px]" data-icon="bar_chart">bar_chart</span>
+            <span class="font-manrope text-[11px] font-medium">Relatórios</span>
+        </a>
+    </nav>
+</body>
+
+</html>

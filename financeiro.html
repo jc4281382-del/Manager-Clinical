@@ -3,9 +3,12 @@
 <html lang="pt-BR">
 
 <head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#005258">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>CliniFlow - Relatórios Financeiros</title>
+    <title>Manager Clinic - Relatórios Financeiros</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap"
         rel="stylesheet" />
@@ -103,7 +106,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/supabase.js"></script>
-    <script src="js/modal.js"></script>
+    <script src="js/modal.js"></script>`n    <script src="js/sidebar.js"></script>
     <script src="js/financeiro.js"></script>
 </head>
 
@@ -118,7 +121,7 @@
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-1yG92WCjg2fAq0EHsBkA-l511Kf1U5la-UAzyCiBCK7fse8e4WCC-zDW95vqG_u8oYajtUIJ-aJXFvVB6SV6zCbkNNDukqnumdHEz_TIiASWiBhIqzgU-zWO5_gEeWnYjQBmrsMvlXKnvQtsNob3KC0juZMhmzcNQsLA94T_G6RglrJlDdvrmfQuvKFTIGTBNALJyWTl3IvYqw0zjNoq3OXI1jMx4Bja0xBdd40R2A5_lAr67LJ6Za9_AyrcokPMYSN6BfOQahkL" />
             </div>
             <span
-                class="text-xl font-extrabold text-[#1A6B72] dark:text-teal-400 font-manrope tracking-tight">CliniFlow</span>
+                class="text-xl font-extrabold text-[#1A6B72] dark:text-teal-400 font-manrope tracking-tight">Manager Clinic</span>
         </div>
         <button
             class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors active:scale-95 duration-200">
@@ -294,7 +297,7 @@
     <nav
         class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-white/80 backdrop-blur-md border-t border-[#EEF2F5] dark:border-slate-800 shadow-[0px_-4px_12px_rgba(28,43,51,0.05)] rounded-t-2xl">
         <a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-[#1A6B72] dark:hover:text-teal-300 transition-colors active:scale-90 duration-150"
-            href="index.html">
+            href="dashboard.html">
             <span class="material-symbols-outlined" data-icon="home">home</span>
             <span class="font-manrope text-[11px] font-medium">Home</span>
         </a>

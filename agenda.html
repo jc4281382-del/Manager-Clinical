@@ -3,9 +3,12 @@
 <html class="light" lang="pt-br">
 
 <head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#005258">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>CliniFlow - Agenda</title>
+    <title>Manager Clinic - Agenda</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"
         rel="stylesheet" />
@@ -112,7 +115,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/supabase.js"></script>
-    <script src="js/modal.js"></script>
+    <script src="js/modal.js"></script>`n    <script src="js/sidebar.js"></script>
     <script src="js/agenda.js"></script>
 </head>
 
@@ -126,7 +129,7 @@
                     data-alt="A professional headshot of a smiling male doctor in a modern medical office setting. He wears a clean white coat and a stethoscope around his neck. The background is softly blurred, showing a high-end clinical environment with clean lines, soft natural lighting, and a palette of whites and soft teals, matching a professional healthcare UI aesthetic."
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvjYrDMw0w5QBblHE3wkvJL3PFalHe_bry7ADJR2HJbnqguAr2hduEAAEl39FMLNOQxQAlH2L5oP13aWPfg2azp1muBv7C0TBNbhMLjxWUqaUKt48ViTwqgQonE0ypDVBZqCEc8qgMX--MIhgjOEmxrIXqE9eYBIsume10g-jYD40ViBqNEAGtUM5uIxG8oyYnPJdMGA_NDmSPIur_rvQ73U1JSSSH6WN4rd2PWFFCbx6TugWGKl-vZIub_EtaqO-t8ZtUPZb5JpuD" />
             </div>
-            <h1 class="text-xl font-extrabold text-[#1A6B72] dark:text-teal-400 font-manrope tracking-tight">CliniFlow
+            <h1 class="text-xl font-extrabold text-[#1A6B72] dark:text-teal-400 font-manrope tracking-tight">Manager Clinic
             </h1>
         </div>
         <button
@@ -343,7 +346,7 @@
         class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-white/80 backdrop-blur-md border-t border-[#EEF2F5] dark:border-slate-800 shadow-[0px_-4px_12px_rgba(28,43,51,0.05)] rounded-t-2xl">
         <!-- Home -->
         <a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-[#1A6B72] dark:hover:text-teal-300 transition-colors active:scale-90 duration-150"
-            href="index.html">
+            href="dashboard.html">
             <span class="material-symbols-outlined" data-icon="home">home</span>
             <span class="font-manrope text-[11px] font-medium">Home</span>
         </a>

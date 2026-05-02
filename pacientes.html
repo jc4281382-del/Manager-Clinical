@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+    <title>Manager Clinic - Pacientes</title>
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#005258">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Manager Clinic">
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#005258", "primary-container": "#1a6b72",
+                        secondary: "#006c48", "secondary-container": "#93f6c4",
+                        error: "#ba1a1a", "error-container": "#ffdad6",
+                        surface: "#f7fafa", "on-surface": "#191c1d", "on-surface-variant": "#3f484a",
+                        "surface-container": "#eceeee", "surface-container-low": "#f2f4f4", "outline-variant": "#bec8c9"
+                    },
+                    fontFamily: { body: ["Manrope"] }
+                }
+            }
+        }
+    </script>
+    <style>body { font-family: 'Manrope', sans-serif; background-color: #f7fafa; }</style>
+    
+    <!-- Supabase & SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/pacientes.js"></script>
+</head>
+<body class="text-on-surface pb-24">
+    <!-- TopAppBar -->
+    <header class="flex justify-between items-center w-full px-6 py-3 sticky top-0 z-50 bg-white shadow-sm border-b border-[#EEF2F5]">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full overflow-hidden bg-slate-200 border-2 border-primary-container">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRBFOcH1cu5mLHNyceo1LksepP1WgLhsi1_8Hz_muOdi567JQk4AB7OT9ocp8LmRYNvFUNO76vCdxwnM6c7zCNN5Habofx0MDq79tn4rUcDdeGZ1xWiESRtbIJpSLSJJyaBzndAduZmUJEs84fnla36-qj1nKCipOc0Pfv6dhuS1flAEpLnGpwD7LT9V4pexCpRT7T6Jeyz3mcLeDoeivbA5lgKiCmBNavHp04HKC2AKmYfIOb8eMHXNclE4z13YLr0ieBkfI9v2Ri" class="w-full h-full object-cover">
+            </div>
+            <span class="text-xl font-extrabold text-[#1A6B72] font-manrope tracking-tight">Manager Clinic</span>
+        </div>
+        <button class="p-2 rounded-full hover:bg-slate-50 transition-colors"><span class="material-symbols-outlined text-slate-500">notifications</span></button>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 pt-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-extrabold text-primary tracking-tight">Quadro de Pacientes</h1>
+            <button class="bg-primary-container text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 shadow hover:bg-primary" onclick="window.openAppointmentModal()">
+                <span class="material-symbols-outlined">add</span> Adicionar
+            </button>
+        </div>
+
+        <!-- Kanban Board -->
+        <div class="flex gap-4 overflow-x-auto pb-6 items-start h-[calc(100vh-250px)]">
+            <!-- Column 1: Agendado -->
+            <div class="min-w-[280px] w-80 bg-surface-container-low rounded-2xl p-4 flex flex-col gap-3">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-slate-700 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-slate-400"></div> Agendados</h3>
+                    <span class="text-xs font-bold bg-white px-2 py-1 rounded-full text-slate-500" id="countAgendado">0</span>
+                </div>
+                <div id="colAgendado" class="flex flex-col gap-3 overflow-y-auto"></div>
+            </div>
+
+            <!-- Column 2: Confirmado -->
+            <div class="min-w-[280px] w-80 bg-blue-50/50 rounded-2xl p-4 flex flex-col gap-3">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-blue-800 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-500"></div> Confirmados</h3>
+                    <span class="text-xs font-bold bg-white px-2 py-1 rounded-full text-blue-600" id="countConfirmado">0</span>
+                </div>
+                <div id="colConfirmado" class="flex flex-col gap-3 overflow-y-auto"></div>
+            </div>
+
+            <!-- Column 3: Realizado -->
+            <div class="min-w-[280px] w-80 bg-secondary-container/20 rounded-2xl p-4 flex flex-col gap-3">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-secondary flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-secondary"></div> Realizados</h3>
+                    <span class="text-xs font-bold bg-white px-2 py-1 rounded-full text-secondary" id="countRealizado">0</span>
+                </div>
+                <div id="colRealizado" class="flex flex-col gap-3 overflow-y-auto"></div>
+            </div>
+
+            <!-- Column 4: Cancelados / Faltou -->
+            <div class="min-w-[280px] w-80 bg-error-container/30 rounded-2xl p-4 flex flex-col gap-3">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-error flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-error"></div> Cancelados/Faltas</h3>
+                    <span class="text-xs font-bold bg-white px-2 py-1 rounded-full text-error" id="countCancelado">0</span>
+                </div>
+                <div id="colCancelado" class="flex flex-col gap-3 overflow-y-auto"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- BottomNavBar Shell -->
+    <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-white/80 backdrop-blur-md border-t border-[#EEF2F5] shadow-[0px_-4px_12px_rgba(28,43,51,0.05)] rounded-t-2xl">
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-1.5 active:scale-90 duration-150 transition-transform hover:text-[#1A6B72]" href="dashboard.html">
+            <span class="material-symbols-outlined text-[24px]">home</span><span class="font-manrope text-[11px] font-medium">Home</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-1.5 active:scale-90 duration-150 transition-transform hover:text-[#1A6B72]" href="agenda.html">
+            <span class="material-symbols-outlined text-[24px]">calendar_month</span><span class="font-manrope text-[11px] font-medium">Agenda</span>
+        </a>
+        <a class="flex flex-col items-center justify-center bg-teal-50 text-[#1A6B72] rounded-xl px-4 py-1.5 active:scale-90 duration-150 transition-transform" href="pacientes.html">
+            <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">groups</span><span class="font-manrope text-[11px] font-medium">Pacientes</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-slate-400 px-4 py-1.5 active:scale-90 duration-150 transition-transform hover:text-[#1A6B72]" href="financeiro.html">
+            <span class="material-symbols-outlined text-[24px]">bar_chart</span><span class="font-manrope text-[11px] font-medium">Relatórios</span>
+        </a>
+    </nav>
+</body>
+</html>
