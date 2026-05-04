@@ -43,7 +43,7 @@
 
     <div class="w-full max-w-md bg-white p-8 rounded-3xl shadow-xl z-10 border border-[#EEF2F5]">
         <div class="text-center mb-8 flex flex-col items-center">
-            <img src="logo.png" alt="Manager Clinic Logo" class="w-32 h-auto mb-4" onerror="this.style.display='none'">
+            <img src="logo.jpg" alt="Manager Clinic Logo" class="w-32 h-auto mb-4" onerror="this.style.display='none'">
             <h1 class="text-3xl font-extrabold text-primary tracking-tight">Manager Clinic</h1>
             <p class="text-on-surface-variant mt-2" id="subtitle">Entre para gerenciar sua clínica</p>
         </div>
@@ -130,6 +130,9 @@
             submitBtn.innerText = 'Aguarde...';
 
             try {
+                // Ensure no stale session exists before attempting login or signup
+                await supabase.auth.signOut();
+
                 if (isLogin) {
                     // LOGIN
                     const { data, error } = await supabase.auth.signInWithPassword({ email, password });

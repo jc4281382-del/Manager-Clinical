@@ -1,0 +1,23 @@
+{
+  "name": "manager-clinical",
+  "version": "1.0.0",
+  "description": "",
+  "main": "sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jc4281382-del/Manager-Clinical.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jc4281382-del/Manager-Clinical/issues"
+  },
+  "homepage": "https://github.com/jc4281382-del/Manager-Clinical#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.105.2"
+  }
+}
