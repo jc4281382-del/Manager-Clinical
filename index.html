@@ -42,7 +42,8 @@
     <div class="absolute bottom-[-10%] right-[-10%] w-80 h-80 bg-[#1a6b72]/10 rounded-full blur-3xl"></div>
 
     <div class="w-full max-w-md bg-white p-8 rounded-3xl shadow-xl z-10 border border-[#EEF2F5]">
-        <div class="text-center mb-8">
+        <div class="text-center mb-8 flex flex-col items-center">
+            <img src="logo.png" alt="Manager Clinic Logo" class="w-32 h-auto mb-4" onerror="this.style.display='none'">
             <h1 class="text-3xl font-extrabold text-primary tracking-tight">Manager Clinic</h1>
             <p class="text-on-surface-variant mt-2" id="subtitle">Entre para gerenciar sua clínica</p>
         </div>
@@ -128,50 +129,57 @@
             submitBtn.disabled = true;
             submitBtn.innerText = 'Aguarde...';
 
-            if (isLogin) {
-                // LOGIN
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) {
-                    Swal.fire({ icon: 'error', title: 'Erro ao entrar', text: error.message });
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = 'Entrar';
-                } else {
-                    window.location.href = 'dashboard.html';
-                }
-            } else {
-                // SIGN UP
-                const name = document.getElementById('name').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
-
-                if (password !== confirmPassword) {
-                    Swal.fire({ icon: 'warning', title: 'Atenção', text: 'As senhas não coincidem!' });
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = 'Criar Conta';
-                    return;
-                }
-
-                const { data, error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: { data: { full_name: name } }
-                });
-
-                if (error) {
-                    Swal.fire({ icon: 'error', title: 'Erro no Cadastro', text: error.message });
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = 'Criar Conta';
-                } else {
-                    if (data.session) {
-                        Swal.fire({ icon: 'success', title: 'Conta Criada!', text: 'Bem-vindo ao Manager Clinic.' }).then(() => {
-                            window.location.href = 'dashboard.html';
-                        });
+            try {
+                if (isLogin) {
+                    // LOGIN
+                    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                    if (error) {
+                        Swal.fire({ icon: 'error', title: 'Erro ao entrar', text: error.message });
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = 'Entrar';
                     } else {
-                        Swal.fire({ icon: 'info', title: 'Quase lá!', text: 'Verifique seu e-mail para confirmar a conta.' });
+                        window.location.href = 'dashboard.html';
+                    }
+                } else {
+                    // SIGN UP
+                    const name = document.getElementById('name').value;
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+
+                    if (password !== confirmPassword) {
+                        Swal.fire({ icon: 'warning', title: 'Atenção', text: 'As senhas não coincidem!' });
                         submitBtn.disabled = false;
                         submitBtn.innerText = 'Criar Conta';
-                        toggleModeBtn.click(); // Switch to login
+                        return;
+                    }
+
+                    const { data, error } = await supabase.auth.signUp({
+                        email,
+                        password,
+                        options: { data: { full_name: name } }
+                    });
+
+                    if (error) {
+                        Swal.fire({ icon: 'error', title: 'Erro no Cadastro', text: error.message });
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = 'Criar Conta';
+                    } else {
+                        if (data.session) {
+                            Swal.fire({ icon: 'success', title: 'Conta Criada!', text: 'Bem-vindo ao Manager Clinic.' }).then(() => {
+                                window.location.href = 'dashboard.html';
+                            });
+                        } else {
+                            Swal.fire({ icon: 'info', title: 'Quase lá!', text: 'Verifique seu e-mail para confirmar a conta.' });
+                            submitBtn.disabled = false;
+                            submitBtn.innerText = 'Criar Conta';
+                            toggleModeBtn.click(); // Switch to login
+                        }
                     }
                 }
+            } catch (err) {
+                console.error("Erro inesperado:", err);
+                Swal.fire({ icon: 'error', title: 'Erro Inesperado', text: 'Ocorreu um erro de comunicação. Verifique sua internet ou tente novamente mais tarde.' });
+                submitBtn.disabled = false;
+                submitBtn.innerText = isLogin ? 'Entrar' : 'Criar Conta';
             }
         });
     </script>
