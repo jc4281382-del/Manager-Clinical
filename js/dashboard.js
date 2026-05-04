@@ -1,158 +1,166 @@
-/**
- * Atualiza o Dashboard com dados do Supabase
- */
+// ── Dashboard JS ─────────────────────────────────────────────────────────────
+// Carrega dados reais do Supabase para o profissional logado
+
+let allAppointments = [];
+let searchQuery = '';
+let filterDay = '';
+
 async function loadDashboard() {
-    if (!currentProfessionalId) return;
+  if (!window.currentProfessionalId) return;
+  const pid = window.currentProfessionalId;
+  const prof = window.currentProfessional;
 
-    // Fetch dashboard metrics
-    const { data: metrics, error: rpcError } = await supabase
-        .rpc('get_dashboard_metrics', { professional_uuid: currentProfessionalId });
+  // Atualizar saudação
+  const greetEl = document.getElementById('greetingName');
+  if (greetEl) {
+    const name = prof?.preferred_name || prof?.full_name || 'Profissional';
+    greetEl.innerText = `Olá, ${name}`;
+  }
+  const dateEl = document.getElementById('currentDate');
+  if (dateEl) {
+    dateEl.innerText = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  }
 
-    if (!rpcError && metrics) {
-        // Atualiza UI com as métricas
-        const m = metrics;
-        
-        // Faturamento
-        const faturamentoEl = document.querySelector('span.text-2xl.font-extrabold.text-primary.tracking-tight');
-        if (faturamentoEl) faturamentoEl.innerText = \`R$ \${m.today_revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\`;
+  const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local
+  // Calcular offset de fuso para filtros corretos
+  const offsetMinutes = new Date().getTimezoneOffset();
+  const tzSign = offsetMinutes <= 0 ? '+' : '-';
+  const tzAbs = Math.abs(offsetMinutes);
+  const tzStr = `${tzSign}${String(Math.floor(tzAbs/60)).padStart(2,'0')}:${String(tzAbs%60).padStart(2,'0')}`;
 
-        // Pacientes Hoje (Agendado + Confirmado + Realizado + Cancelado + Faltou) -> Todos agendados pro dia
-        const totalPacientes = Object.values(m.status_counts).reduce((a, b) => a + b, 0);
-        const pacientesHojeEl = document.querySelector('div.bg-white.p-5:nth-child(1) span.text-3xl');
-        if (pacientesHojeEl) pacientesHojeEl.innerText = String(totalPacientes).padStart(2, '0');
+  const { data: apps, error } = await window.supabase
+    .from('appointments')
+    .select('id, scheduled_at, appointment_type, value, status, patients(full_name, phone, email)')
+    .eq('professional_id', pid)
+    .gte('scheduled_at', `${today}T00:00:00${tzStr}`)
+    .lte('scheduled_at', `${today}T23:59:59${tzStr}`)
+    .order('scheduled_at', { ascending: true });
 
-        // Realizados
-        const realizadosEl = document.querySelector('div.border-l-secondary span.text-3xl');
-        if (realizadosEl) realizadosEl.innerText = String(m.status_counts['Realizado'] || 0).padStart(2, '0');
+  if (error) { console.error(error); return; }
+  allAppointments = apps || [];
 
-        // Cancelados
-        const canceladosEl = document.querySelector('div.border-l-error span.text-3xl');
-        if (canceladosEl) canceladosEl.innerText = String(m.status_counts['Cancelado'] || 0).padStart(2, '0');
+  updateStats(allAppointments);
+  renderAppointments(allAppointments);
+}
 
-        // Não Compareceram (Faltou)
-        const faltasEl = document.querySelector('div.border-l-slate-400 span.text-3xl');
-        if (faltasEl) faltasEl.innerText = String(m.status_counts['Faltou'] || 0).padStart(2, '0');
-    }
+function updateStats(apps) {
+  const counts = { Agendado:0, Confirmado:0, Realizado:0, Cancelado:0, Faltou:0 };
+  let revenue = 0;
+  apps.forEach(a => {
+    counts[a.status] = (counts[a.status] || 0) + 1;
+    if (a.status === 'Realizado') revenue += (a.value || 0);
+  });
+  setText('statTotal', String(apps.length).padStart(2,'0'));
+  setText('statRevenue', `R$ ${revenue.toLocaleString('pt-BR',{minimumFractionDigits:2})}`);
+  setText('statRealizados', String(counts['Realizado']).padStart(2,'0'));
+  setText('statCancelados', String(counts['Cancelado']).padStart(2,'0'));
+  setText('statFaltou', String(counts['Faltou']).padStart(2,'0'));
+}
 
-    // Carregar Lista de Compromissos
-    const todayStr = new Date().toISOString().split('T')[0];
-    const { data: appointments, error } = await supabase
-        .from('appointments')
-        .select(\`
-            id,
-            scheduled_at,
-            appointment_type,
-            value,
-            status,
-            patients ( full_name )
-        \`)
-        .eq('professional_id', currentProfessionalId)
-        .gte('scheduled_at', \`\${todayStr}T00:00:00\`)
-        .lte('scheduled_at', \`\${todayStr}T23:59:59\`)
-        .order('scheduled_at', { ascending: true })
-        .limit(10);
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = val;
+}
 
-    if (error) {
-        console.error('Erro ao buscar compromissos', error);
-        return;
-    }
+function renderAppointments(apps) {
+  const tbody = document.getElementById('appointmentsTbody');
+  if (!tbody) return;
 
-    const tbody = document.querySelector('tbody');
-    if (!tbody) return;
-
-    tbody.innerHTML = '';
-
-    if (appointments.length === 0) {
-        tbody.innerHTML = \`<tr><td colspan="6" class="px-6 py-5 text-center text-on-surface-variant">Nenhum compromisso para hoje.</td></tr>\`;
-        return;
-    }
-
-    appointments.forEach(app => {
-        const time = new Date(app.scheduled_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-        const patientName = app.patients?.full_name || 'Desconhecido';
-        const initials = patientName.substring(0, 2).toUpperCase();
-        
-        let statusClass = '';
-        switch(app.status) {
-            case 'Realizado': statusClass = 'bg-secondary/10 text-secondary border-secondary/20'; break;
-            case 'Confirmado': statusClass = 'bg-blue-50 text-blue-600 border-blue-200'; break;
-            case 'Agendado': statusClass = 'bg-slate-100 text-slate-600 border-slate-200'; break;
-            case 'Cancelado': statusClass = 'bg-error/10 text-error border-error/20'; break;
-            case 'Faltou': statusClass = 'bg-slate-200 text-slate-700 border-slate-300'; break;
-        }
-
-        const opacityClass = app.status === 'Cancelado' ? 'opacity-75' : '';
-
-        const tr = \`
-        <tr class="hover:bg-slate-50/50 transition-colors \${opacityClass}">
-            <td class="px-6 py-5 font-bold text-primary">\${time}</td>
-            <td class="px-6 py-5">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-xs">
-                        \${initials}
-                    </div>
-                    <span class="font-semibold text-on-surface">\${patientName}</span>
-                </div>
-            </td>
-            <td class="px-6 py-5">
-                <span class="text-sm font-medium px-2 py-1 rounded bg-surface-container text-on-surface-variant">\${app.appointment_type}</span>
-            </td>
-            <td class="px-6 py-5 font-semibold">R$ \${app.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-            <td class="px-6 py-5">
-                <select onchange="updateAppointmentStatus('\${app.id}', this.value)" class="cursor-pointer appearance-none outline-none inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border \${statusClass}">
-                    <option value="Agendado" \${app.status === 'Agendado' ? 'selected' : ''}>Agendado</option>
-                    <option value="Confirmado" \${app.status === 'Confirmado' ? 'selected' : ''}>Confirmado</option>
-                    <option value="Realizado" \${app.status === 'Realizado' ? 'selected' : ''}>Realizado</option>
-                    <option value="Cancelado" \${app.status === 'Cancelado' ? 'selected' : ''}>Cancelado</option>
-                    <option value="Faltou" \${app.status === 'Faltou' ? 'selected' : ''}>Faltou</option>
-                </select>
-            </td>
-            <td class="px-6 py-5">
-                <button class="text-primary hover:underline font-bold text-sm" onclick='editAppointment("\${app.id}")'>Editar</button>
-            </td>
-        </tr>
-        \`;
-        tbody.insertAdjacentHTML('beforeend', tr);
+  let filtered = apps;
+  if (searchQuery) {
+    filtered = filtered.filter(a =>
+      (a.patients?.full_name || '').toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }
+  if (filterDay) {
+    const days = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+    filtered = filtered.filter(a => {
+      const d = new Date(a.scheduled_at);
+      return days[d.getDay()].startsWith(filterDay.toLowerCase());
     });
+  }
 
-    window.currentAppointmentsData = appointments;
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-on-surface-variant">Nenhum compromisso encontrado.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(a => {
+    const time = new Date(a.scheduled_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const name = a.patients?.full_name || '—';
+    const ini = name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    const statusColors = {
+      Realizado: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      Confirmado: 'bg-blue-50 text-blue-700 border-blue-200',
+      Agendado: 'bg-slate-100 text-slate-600 border-slate-200',
+      Cancelado: 'bg-red-50 text-red-700 border-red-200',
+      Faltou: 'bg-amber-50 text-amber-700 border-amber-200'
+    };
+    const sc = statusColors[a.status] || 'bg-slate-100 text-slate-600 border-slate-200';
+    return `
+    <tr class="hover:bg-slate-50/50 transition-colors ${a.status==='Cancelado'?'opacity-60':''}">
+      <td class="px-4 py-4 font-bold text-primary whitespace-nowrap">${time}</td>
+      <td class="px-4 py-4">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-primary font-bold text-xs flex-shrink-0">${ini}</div>
+          <div>
+            <p class="font-semibold text-on-surface text-sm">${name}</p>
+            <p class="text-xs text-on-surface-variant">${a.appointment_type}</p>
+          </div>
+        </div>
+      </td>
+      <td class="px-4 py-4 font-semibold text-sm">R$ ${(a.value||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+      <td class="px-4 py-4">
+        <select onchange="updateStatus('${a.id}',this.value)" class="cursor-pointer text-xs font-bold px-2 py-1 rounded-full border ${sc} appearance-none outline-none">
+          ${['Agendado','Confirmado','Realizado','Cancelado','Faltou'].map(s=>`<option value="${s}" ${a.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td class="px-4 py-4">
+        <button onclick="openEdit('${a.id}')" class="text-primary hover:underline font-bold text-sm">Editar</button>
+      </td>
+    </tr>`;
+  }).join('');
 }
 
-window.editAppointment = function(id) {
-    const app = window.currentAppointmentsData.find(a => a.id === id);
-    if(app && window.openAppointmentModal) {
-        window.openAppointmentModal(app);
-    }
-}
+window.updateStatus = async (id, status) => {
+  const { error } = await window.supabase.from('appointments').update({status}).eq('id',id);
+  if (error) { Swal.fire({icon:'error',title:'Erro',text:error.message}); return; }
+  allAppointments = allAppointments.map(a => a.id===id ? {...a,status} : a);
+  updateStats(allAppointments);
+  renderAppointments(allAppointments);
+};
 
-window.updateAppointmentStatus = async function(id, newStatus) {
-    try {
-        const { error } = await supabase.from('appointments').update({ status: newStatus }).eq('id', id);
-        if (error) throw error;
-        
-        // Recarregar os dados para atualizar os cartões do topo também
-        loadDashboard();
-        
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            icon: 'success',
-            title: 'Status atualizado!'
-        });
-    } catch (e) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Erro',
-            text: 'Erro ao atualizar status: ' + e.message
-        });
-    }
-}
+window.openEdit = (id) => {
+  const app = allAppointments.find(a=>a.id===id);
+  if (app && window.openAppointmentModal) window.openAppointmentModal(app);
+};
 
 document.addEventListener('DOMContentLoaded', () => {
-    initAuth().then(() => {
-        loadDashboard();
+  initAuth().then(() => {
+    loadDashboard();
+    // Botão Novo Agendamento
+    document.getElementById('btnNovoAgendamento')?.addEventListener('click', () => {
+      window.openAppointmentModal?.();
     });
-    document.addEventListener('appointmentSaved', loadDashboard);
+    // Busca
+    document.getElementById('searchInput')?.addEventListener('input', e => {
+      searchQuery = e.target.value;
+      renderAppointments(allAppointments);
+    });
+    // Toggle busca
+    document.getElementById('btnSearch')?.addEventListener('click', () => {
+      document.getElementById('searchBar')?.classList.toggle('hidden');
+      document.getElementById('searchInput')?.focus();
+    });
+    // Filtro dia
+    document.querySelectorAll('.day-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterDay = btn.dataset.day === filterDay ? '' : btn.dataset.day;
+        document.querySelectorAll('.day-filter-btn').forEach(b => b.classList.toggle('bg-primary',b.dataset.day===filterDay));
+        document.querySelectorAll('.day-filter-btn').forEach(b => b.classList.toggle('text-white',b.dataset.day===filterDay));
+        renderAppointments(allAppointments);
+      });
+    });
+  });
+  document.addEventListener('appointmentSaved', loadDashboard);
 });
