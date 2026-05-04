@@ -130,8 +130,8 @@
             submitBtn.innerText = 'Aguarde...';
 
             try {
-                // Ensure no stale session exists before attempting login or signup
-                await supabase.auth.signOut();
+                // Limpar sessão antiga silenciosamente (ignora erros se não houver sessão)
+                try { await supabase.auth.signOut(); } catch(e) { /* sem sessão ativa, ok */ }
 
                 if (isLogin) {
                     // LOGIN
@@ -180,7 +180,7 @@
                 }
             } catch (err) {
                 console.error("Erro inesperado:", err);
-                Swal.fire({ icon: 'error', title: 'Erro Inesperado', text: 'Ocorreu um erro de comunicação. Verifique sua internet ou tente novamente mais tarde.' });
+                Swal.fire({ icon: 'error', title: 'Erro Inesperado', text: err.message || 'Ocorreu um erro de comunicação. Verifique sua internet ou tente novamente mais tarde.' });
                 submitBtn.disabled = false;
                 submitBtn.innerText = isLogin ? 'Entrar' : 'Criar Conta';
             }
