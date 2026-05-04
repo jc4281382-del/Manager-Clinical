@@ -135,6 +135,15 @@ window.openEdit = (id) => {
   if (app && window.openAppointmentModal) window.openAppointmentModal(app);
 };
 
+window.updateStatus = async (id, status) => {
+  const { error } = await window.supabase.from('appointments').update({status}).eq('id',id);
+  if (error) { Swal.fire({icon:'error',title:'Erro',text:error.message}); return; }
+  allAppointments = allAppointments.map(a => a.id===id ? {...a,status} : a);
+  updateStats(allAppointments); renderAppointments(allAppointments);
+};
+
+window.openEdit = (id) => { const app = allAppointments.find(a=>a.id===id); if (app && window.openAppointmentModal) window.openAppointmentModal(app); };
+
 document.addEventListener('DOMContentLoaded', () => {
   initAuth().then(() => {
     loadDashboard();
