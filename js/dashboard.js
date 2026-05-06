@@ -112,8 +112,9 @@ function renderAppointments(apps) {
           ${['Agendado','Confirmado','Realizado','Cancelado','Faltou'].map(s=>`<option value="${s}" ${a.status===s?'selected':''}>${s}</option>`).join('')}
         </select>
       </td>
-      <td class="px-4 py-4">
+      <td class="px-4 py-4 flex items-center gap-2">
         <button onclick="openEdit('${a.id}')" class="text-primary hover:underline font-bold text-sm">Editar</button>
+        <button onclick="deleteAppointment('${a.id}')" class="text-error hover:underline font-bold text-sm">Excluir</button>
       </td>
     </tr>`;
   }).join('');
@@ -131,6 +132,28 @@ window.updateStatus = async (id, status) => {
 window.openEdit = (id) => {
   const app = allAppointments.find(a=>a.id===id);
   if (app && window.openAppointmentModal) window.openAppointmentModal(app);
+};
+
+window.deleteAppointment = async (id) => {
+  const r = await Swal.fire({
+    title: 'Excluir agendamento?',
+    text: "Esta ação não pode ser desfeita.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ba1a1a',
+    cancelButtonColor: '#6f797a',
+    confirmButtonText: 'Sim, excluir',
+    cancelButtonText: 'Cancelar'
+  });
+  if (r.isConfirmed) {
+    const { error } = await window.supabase.from('appointments').delete().eq('id', id);
+    if (error) {
+      Swal.fire('Erro!', error.message, 'error');
+    } else {
+      Swal.fire({ icon: 'success', title: 'Excluído!', timer: 1500, showConfirmButton: false });
+      loadDashboard();
+    }
+  }
 };
 
 document.addEventListener('DOMContentLoaded', () => {

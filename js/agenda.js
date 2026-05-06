@@ -78,19 +78,11 @@ window.agendaEdit = (id) => {
   if (a && window.openAppointmentModal) window.openAppointmentModal(a);
 };
 
-// Problema 5 corrigido: Remarcar abre o modal focando no campo de data/hora para fácil mudança
 window.agendaRemarcar = (id) => {
   const a = (window._agendaData||[]).find(x=>x.id===id);
   if (!a || !window.openAppointmentModal) return;
-  window.openAppointmentModal(a);
-  // Focar no campo de data após abertura do modal para indicar intenção de remarcar
-  requestAnimationFrame(() => {
-    const dateInput = document.getElementById('appointmentDate');
-    if (dateInput) {
-      dateInput.focus();
-      dateInput.select?.();
-    }
-  });
+  // Passa o objeto com a flag _isReschedule
+  window.openAppointmentModal({ ...a, _isReschedule: true });
 };
 
 window.agendaCancel = async (id) => {

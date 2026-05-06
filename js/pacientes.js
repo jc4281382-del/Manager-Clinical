@@ -132,8 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Botão "Novo" → abre modal de agendamento (comportamento mantido pois paciente é criado junto)
-    document.getElementById('btnNovoPaciente')?.addEventListener('click', () => window.openAppointmentModal?.());
+    // Botão "Novo" → abre modal de cadastro de paciente (sem agendamento)
+    document.getElementById('btnNovoPaciente')?.addEventListener('click', () => window.openAppointmentModal?.('ONLY_PATIENT'));
   });
   document.addEventListener('appointmentSaved', loadPacientes);
 });

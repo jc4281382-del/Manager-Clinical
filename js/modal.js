@@ -85,11 +85,34 @@ function injectAppointmentModal() {
       document.getElementById('appointmentValue').value = app.value || 0;
       document.getElementById('statusContainer').classList.remove('hidden');
       document.getElementById('appointmentStatus').value = app.status;
+
+      if (app._isReschedule) {
+        document.getElementById('modalTitle').innerText = 'Remarcar Agendamento';
+        document.getElementById('appointmentDate').value = '';
+        document.getElementById('appointmentTime').value = '';
+        requestAnimationFrame(() => document.getElementById('appointmentDate').focus());
+      }
+    } else if (app === 'ONLY_PATIENT') {
+      document.getElementById('modalTitle').innerText = 'Novo Paciente';
+      document.getElementById('appointmentId').value = '';
+      document.getElementById('existingPatientId').value = '';
+      document.getElementById('patientName').value = '';
+      document.getElementById('patientPhone').value = '';
+      document.getElementById('patientEmail').value = '';
+      document.getElementById('patientName').readOnly = false;
+      document.getElementById('patientPhone').readOnly = false;
+      document.getElementById('statusContainer').classList.add('hidden');
+      // Esconder campos de consulta
+      document.getElementById('appointmentDate').parentElement.classList.add('hidden');
+      document.getElementById('appointmentType').parentElement.classList.add('hidden');
     } else {
       document.getElementById('modalTitle').innerText = 'Novo Agendamento';
       document.getElementById('appointmentId').value = '';
       document.getElementById('statusContainer').classList.add('hidden');
-      // Bug 4 corrigido: usar data local em vez de UTC (new Date().toISOString() retorna UTC)
+      // Garantir que campos de consulta apareçam
+      document.getElementById('appointmentDate').parentElement.classList.remove('hidden');
+      document.getElementById('appointmentType').parentElement.classList.remove('hidden');
+      // Bug 4 corrigido: usar data local em vez de UTC
       document.getElementById('appointmentDate').value = new Date().toLocaleDateString('en-CA');
     }
     modal.classList.remove('hidden'); modal.classList.add('flex');
@@ -128,6 +151,47 @@ function injectAppointmentModal() {
       const tzOffset = `${sign}${offH}:${offM}`;
       const scheduled_at = `${date}T${time}:00${tzOffset}`;
 
+      // Validação de horário de trabalho (Problema 10)
+      const prof = window.currentProfessional;
+      if (prof && date && time && document.getElementById('modalTitle').innerText !== 'Novo Paciente') {
+        const start = prof.work_start || '08:00';
+        const end = prof.work_end || '18:00';
+        if (time < start || time > end) {
+          const conf = await Swal.fire({
+            title: 'Fora do horário',
+            text: `Este agendamento (${time}) está fora do seu horário de trabalho (${start} às ${end}). Deseja continuar?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sim, agendar',
+            cancelButtonText: 'Não, corrigir'
+          });
+          if (!conf.isConfirmed) { saveBtn.disabled = false; saveBtn.innerText = 'Salvar'; return; }
+        }
+      }
+
+      // Validação de conflito de horário (Menor)
+      if (!id && date && time && document.getElementById('modalTitle').innerText !== 'Novo Paciente') {
+        const { data: conflict } = await window.supabase
+          .from('appointments')
+          .select('id')
+          .eq('professional_id', window.currentProfessionalId)
+          .eq('scheduled_at', scheduled_at)
+          .neq('status', 'Cancelado')
+          .maybeSingle();
+        
+        if (conflict) {
+          const conf = await Swal.fire({
+            title: 'Conflito de horário',
+            text: 'Já existe um agendamento para este exato momento. Deseja manter duplicidade?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sim, duplicar',
+            cancelButtonText: 'Não, alterar'
+          });
+          if (!conf.isConfirmed) { saveBtn.disabled = false; saveBtn.innerText = 'Salvar'; return; }
+        }
+      }
+
       if (!id) {
         // Bug 3 corrigido: verificar se paciente já existe pelo telefone antes de criar novo
         let patientId = null;
@@ -155,9 +219,11 @@ function injectAppointmentModal() {
           patientId = pat.id;
         }
 
-        const { error: ae } = await window.supabase.from('appointments')
-          .insert([{ professional_id: window.currentProfessionalId, patient_id: patientId, scheduled_at, appointment_type: type, value, status: 'Agendado' }]);
-        if (ae) throw ae;
+        if (document.getElementById('modalTitle').innerText !== 'Novo Paciente') {
+          const { error: ae } = await window.supabase.from('appointments')
+            .insert([{ professional_id: window.currentProfessionalId, patient_id: patientId, scheduled_at, appointment_type: type, value, status: 'Agendado' }]);
+          if (ae) throw ae;
+        }
       } else {
         // Atualizar agendamento
         const { error: ue } = await window.supabase.from('appointments')
