@@ -54,7 +54,19 @@ function injectAppointmentModal() {
     form.reset();
     document.getElementById('patientName').readOnly = false;
     document.getElementById('patientPhone').readOnly = false;
-    if (app) {
+    if (app && app._newForPatient) {
+      // Novo agendamento para paciente existente (vindo da página Pacientes)
+      document.getElementById('modalTitle').innerText = 'Novo Agendamento';
+      document.getElementById('appointmentId').value = '';
+      document.getElementById('existingPatientId').value = app.patient_id || '';
+      document.getElementById('patientName').value = app.patients?.full_name || '';
+      document.getElementById('patientPhone').value = app.patients?.phone || '';
+      document.getElementById('patientEmail').value = app.patients?.email || '';
+      document.getElementById('patientName').readOnly = true;
+      document.getElementById('patientPhone').readOnly = true;
+      document.getElementById('statusContainer').classList.add('hidden');
+      document.getElementById('appointmentDate').value = new Date().toLocaleDateString('en-CA');
+    } else if (app) {
       document.getElementById('modalTitle').innerText = 'Editar Agendamento';
       document.getElementById('appointmentId').value = app.id;
       document.getElementById('existingPatientId').value = app.patient_id || '';
@@ -77,8 +89,8 @@ function injectAppointmentModal() {
       document.getElementById('modalTitle').innerText = 'Novo Agendamento';
       document.getElementById('appointmentId').value = '';
       document.getElementById('statusContainer').classList.add('hidden');
-      // Default: hoje
-      document.getElementById('appointmentDate').value = new Date().toISOString().split('T')[0];
+      // Bug 4 corrigido: usar data local em vez de UTC (new Date().toISOString() retorna UTC)
+      document.getElementById('appointmentDate').value = new Date().toLocaleDateString('en-CA');
     }
     modal.classList.remove('hidden'); modal.classList.add('flex');
     requestAnimationFrame(() => { modal.classList.remove('opacity-0'); box.classList.remove('scale-95'); });
@@ -117,13 +129,34 @@ function injectAppointmentModal() {
       const scheduled_at = `${date}T${time}:00${tzOffset}`;
 
       if (!id) {
-        // Criar paciente + agendamento
-        const { data: pat, error: pe } = await window.supabase.from('patients')
-          .insert([{ professional_id: window.currentProfessionalId, full_name: name, phone, email: email||null }])
-          .select('id').single();
-        if (pe) throw pe;
+        // Bug 3 corrigido: verificar se paciente já existe pelo telefone antes de criar novo
+        let patientId = null;
+
+        if (phone) {
+          const { data: existing } = await window.supabase
+            .from('patients')
+            .select('id')
+            .eq('professional_id', window.currentProfessionalId)
+            .eq('phone', phone)
+            .maybeSingle();
+
+          if (existing) {
+            // Paciente já existe — reutilizar
+            patientId = existing.id;
+          }
+        }
+
+        if (!patientId) {
+          // Criar novo paciente apenas se não existir
+          const { data: pat, error: pe } = await window.supabase.from('patients')
+            .insert([{ professional_id: window.currentProfessionalId, full_name: name, phone, email: email||null }])
+            .select('id').single();
+          if (pe) throw pe;
+          patientId = pat.id;
+        }
+
         const { error: ae } = await window.supabase.from('appointments')
-          .insert([{ professional_id: window.currentProfessionalId, patient_id: pat.id, scheduled_at, appointment_type: type, value, status: 'Agendado' }]);
+          .insert([{ professional_id: window.currentProfessionalId, patient_id: patientId, scheduled_at, appointment_type: type, value, status: 'Agendado' }]);
         if (ae) throw ae;
       } else {
         // Atualizar agendamento

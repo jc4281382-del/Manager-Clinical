@@ -23,7 +23,6 @@
   <style>
     body { font-family:'Manrope',sans-serif; background:#f7fafa; min-height:100dvh; }
     .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
-    .kanban-col { min-width: 220px; max-width: 260px; }
   </style>
 </head>
 <body class="text-on-surface pb-28">
@@ -44,60 +43,27 @@
     </button>
   </header>
 
-  <!-- Kanban Board -->
   <main class="px-4 pt-5">
-    <div class="flex gap-4 overflow-x-auto pb-6">
+    <!-- Busca de pacientes -->
+    <div class="relative mb-4">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+      <input
+        id="patientSearchInput"
+        type="text"
+        placeholder="Buscar por nome ou telefone..."
+        class="w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-4 text-sm focus:border-primary outline-none bg-white shadow-sm"
+      >
+    </div>
 
-      <!-- Agendado -->
-      <div class="kanban-col flex-shrink-0">
-        <div class="flex items-center gap-2 mb-3">
-          <div class="w-3 h-3 rounded-full bg-slate-400"></div>
-          <h3 class="font-bold text-sm text-on-surface-variant">Agendado</h3>
-          <span id="count-Agendado" class="ml-auto text-xs font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">0</span>
-        </div>
-        <div id="col-Agendado" class="space-y-2 min-h-[100px]"></div>
+    <!-- Contador -->
+    <p id="patientsCount" class="text-xs font-bold text-on-surface-variant mb-4">Carregando...</p>
+
+    <!-- Grid de pacientes únicos -->
+    <div id="patientsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="text-center py-16 text-on-surface-variant col-span-full">
+        <span class="material-symbols-outlined text-5xl opacity-30 block mb-2">group</span>
+        Carregando pacientes...
       </div>
-
-      <!-- Confirmado -->
-      <div class="kanban-col flex-shrink-0">
-        <div class="flex items-center gap-2 mb-3">
-          <div class="w-3 h-3 rounded-full bg-blue-500"></div>
-          <h3 class="font-bold text-sm text-on-surface-variant">Confirmado</h3>
-          <span id="count-Confirmado" class="ml-auto text-xs font-bold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">0</span>
-        </div>
-        <div id="col-Confirmado" class="space-y-2 min-h-[100px]"></div>
-      </div>
-
-      <!-- Realizado -->
-      <div class="kanban-col flex-shrink-0">
-        <div class="flex items-center gap-2 mb-3">
-          <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
-          <h3 class="font-bold text-sm text-on-surface-variant">Realizado</h3>
-          <span id="count-Realizado" class="ml-auto text-xs font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">0</span>
-        </div>
-        <div id="col-Realizado" class="space-y-2 min-h-[100px]"></div>
-      </div>
-
-      <!-- Cancelado -->
-      <div class="kanban-col flex-shrink-0">
-        <div class="flex items-center gap-2 mb-3">
-          <div class="w-3 h-3 rounded-full bg-red-500"></div>
-          <h3 class="font-bold text-sm text-on-surface-variant">Cancelado</h3>
-          <span id="count-Cancelado" class="ml-auto text-xs font-bold bg-red-50 text-red-700 px-2 py-0.5 rounded-full">0</span>
-        </div>
-        <div id="col-Cancelado" class="space-y-2 min-h-[100px]"></div>
-      </div>
-
-      <!-- Faltou -->
-      <div class="kanban-col flex-shrink-0">
-        <div class="flex items-center gap-2 mb-3">
-          <div class="w-3 h-3 rounded-full bg-amber-500"></div>
-          <h3 class="font-bold text-sm text-on-surface-variant">Faltou</h3>
-          <span id="count-Faltou" class="ml-auto text-xs font-bold bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full">0</span>
-        </div>
-        <div id="col-Faltou" class="space-y-2 min-h-[100px]"></div>
-      </div>
-
     </div>
   </main>
 

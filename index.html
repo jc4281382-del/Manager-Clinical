@@ -130,9 +130,6 @@
             submitBtn.innerText = 'Aguarde...';
 
             try {
-                // Limpar sessão antiga silenciosamente (ignora erros se não houver sessão)
-                try { await supabase.auth.signOut(); } catch(e) { /* sem sessão ativa, ok */ }
-
                 if (isLogin) {
                     // LOGIN
                     const { data, error } = await supabase.auth.signInWithPassword({ email, password });

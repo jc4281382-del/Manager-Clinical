@@ -3,7 +3,7 @@
 
 let allAppointments = [];
 let searchQuery = '';
-let filterDay = '';
+let filterStatus = '';
 
 async function loadDashboard() {
   if (!window.currentProfessionalId) return;
@@ -72,12 +72,9 @@ function renderAppointments(apps) {
       (a.patients?.full_name || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
   }
-  if (filterDay) {
-    const days = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
-    filtered = filtered.filter(a => {
-      const d = new Date(a.scheduled_at);
-      return days[d.getDay()].startsWith(filterDay.toLowerCase());
-    });
+  // Filtro por STATUS (substituiu o filtro inútil por dia da semana)
+  if (filterStatus) {
+    filtered = filtered.filter(a => a.status === filterStatus);
   }
 
   if (filtered.length === 0) {
@@ -122,6 +119,7 @@ function renderAppointments(apps) {
   }).join('');
 }
 
+// ── Funções globais (declaradas UMA ÚNICA VEZ) ─────────────────────────────
 window.updateStatus = async (id, status) => {
   const { error } = await window.supabase.from('appointments').update({status}).eq('id',id);
   if (error) { Swal.fire({icon:'error',title:'Erro',text:error.message}); return; }
@@ -134,15 +132,6 @@ window.openEdit = (id) => {
   const app = allAppointments.find(a=>a.id===id);
   if (app && window.openAppointmentModal) window.openAppointmentModal(app);
 };
-
-window.updateStatus = async (id, status) => {
-  const { error } = await window.supabase.from('appointments').update({status}).eq('id',id);
-  if (error) { Swal.fire({icon:'error',title:'Erro',text:error.message}); return; }
-  allAppointments = allAppointments.map(a => a.id===id ? {...a,status} : a);
-  updateStats(allAppointments); renderAppointments(allAppointments);
-};
-
-window.openEdit = (id) => { const app = allAppointments.find(a=>a.id===id); if (app && window.openAppointmentModal) window.openAppointmentModal(app); };
 
 document.addEventListener('DOMContentLoaded', () => {
   initAuth().then(() => {
@@ -161,12 +150,15 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('searchBar')?.classList.toggle('hidden');
       document.getElementById('searchInput')?.focus();
     });
-    // Filtro dia
-    document.querySelectorAll('.day-filter-btn').forEach(btn => {
+    // Filtro por STATUS (substituiu filtro por dia da semana)
+    document.querySelectorAll('.status-filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        filterDay = btn.dataset.day === filterDay ? '' : btn.dataset.day;
-        document.querySelectorAll('.day-filter-btn').forEach(b => b.classList.toggle('bg-primary',b.dataset.day===filterDay));
-        document.querySelectorAll('.day-filter-btn').forEach(b => b.classList.toggle('text-white',b.dataset.day===filterDay));
+        filterStatus = btn.dataset.status === filterStatus ? '' : btn.dataset.status;
+        document.querySelectorAll('.status-filter-btn').forEach(b => {
+          b.classList.toggle('bg-primary', b.dataset.status === filterStatus);
+          b.classList.toggle('text-white', b.dataset.status === filterStatus);
+          b.classList.toggle('border-primary', b.dataset.status === filterStatus);
+        });
         renderAppointments(allAppointments);
       });
     });

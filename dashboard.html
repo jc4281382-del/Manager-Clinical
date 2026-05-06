@@ -67,16 +67,14 @@
       <input id="searchInput" type="text" placeholder="Buscar paciente pelo nome..." class="w-full rounded-xl border border-outline-variant py-2.5 px-4 text-sm focus:border-primary outline-none bg-white shadow-sm">
     </div>
 
-    <!-- Filtro por Dia -->
+    <!-- Filtro por Status -->
     <div class="flex gap-2 mb-5 overflow-x-auto pb-1 no-scrollbar">
       <style>.no-scrollbar::-webkit-scrollbar{display:none}</style>
-      <button class="day-filter-btn flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full border border-outline-variant hover:bg-primary hover:text-white hover:border-primary transition-colors" data-day="seg">Seg</button>
-      <button class="day-filter-btn flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full border border-outline-variant hover:bg-primary hover:text-white hover:border-primary transition-colors" data-day="ter">Ter</button>
-      <button class="day-filter-btn flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full border border-outline-variant hover:bg-primary hover:text-white hover:border-primary transition-colors" data-day="qua">Qua</button>
-      <button class="day-filter-btn flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full border border-outline-variant hover:bg-primary hover:text-white hover:border-primary transition-colors" data-day="qui">Qui</button>
-      <button class="day-filter-btn flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full border border-outline-variant hover:bg-primary hover:text-white hover:border-primary transition-colors" data-day="sex">Sex</button>
-      <button class="day-filter-btn flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full border border-outline-variant hover:bg-primary hover:text-white hover:border-primary transition-colors" data-day="sab">Sáb</button>
-      <button class="day-filter-btn flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full border border-outline-variant hover:bg-primary hover:text-white hover:border-primary transition-colors" data-day="dom">Dom</button>
+      <button class="status-filter-btn flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full border border-outline-variant hover:bg-primary hover:text-white hover:border-primary transition-colors" data-status="Agendado">Agendado</button>
+      <button class="status-filter-btn flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full border border-outline-variant hover:bg-primary hover:text-white hover:border-primary transition-colors" data-status="Confirmado">Confirmado</button>
+      <button class="status-filter-btn flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full border border-outline-variant hover:bg-primary hover:text-white hover:border-primary transition-colors" data-status="Realizado">Realizado</button>
+      <button class="status-filter-btn flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full border border-outline-variant hover:bg-primary hover:text-white hover:border-primary transition-colors" data-status="Cancelado">Cancelado</button>
+      <button class="status-filter-btn flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-full border border-outline-variant hover:bg-primary hover:text-white hover:border-primary transition-colors" data-status="Faltou">Faltou</button>
     </div>
 
     <!-- Cards de Stats -->

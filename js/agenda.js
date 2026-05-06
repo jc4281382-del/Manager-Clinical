@@ -1,5 +1,6 @@
 // ── Agenda JS ────────────────────────────────────────────────────────────────
-let selectedDate = new Date().toISOString().split('T')[0];
+// Bug 2 corrigido: offset de fuso horário aplicado na query
+let selectedDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local (evita UTC)
 
 async function loadAgenda(date) {
   if (!window.currentProfessionalId) return;
@@ -9,12 +10,18 @@ async function loadAgenda(date) {
   const h = document.getElementById('agendaDateLabel');
   if (h) h.innerText = new Date(date + 'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
 
+  // Calcular offset de fuso (igual ao dashboard)
+  const offsetMinutes = new Date().getTimezoneOffset();
+  const tzSign = offsetMinutes <= 0 ? '+' : '-';
+  const tzAbs = Math.abs(offsetMinutes);
+  const tzStr = `${tzSign}${String(Math.floor(tzAbs/60)).padStart(2,'0')}:${String(tzAbs%60).padStart(2,'0')}`;
+
   const { data, error } = await window.supabase
     .from('appointments')
     .select('id, scheduled_at, appointment_type, value, status, patients(full_name, phone, email)')
     .eq('professional_id', window.currentProfessionalId)
-    .gte('scheduled_at', `${date}T00:00:00`)
-    .lte('scheduled_at', `${date}T23:59:59`)
+    .gte('scheduled_at', `${date}T00:00:00${tzStr}`)
+    .lte('scheduled_at', `${date}T23:59:59${tzStr}`)
     .order('scheduled_at');
 
   if (error) { console.error(error); return; }
@@ -55,8 +62,9 @@ async function loadAgenda(date) {
       </div>
       <div class="flex flex-col gap-1.5 flex-shrink-0">
         <button onclick="agendaEdit('${a.id}')" class="text-xs font-bold text-primary border border-primary px-3 py-1 rounded-lg hover:bg-teal-50 transition-colors">Editar</button>
-        <button onclick="agendaCancel('${a.id}')" class="text-xs font-bold text-error border border-error px-3 py-1 rounded-lg hover:bg-red-50 transition-colors">Cancelar</button>
-        <button onclick="agendaRemarcar('${a.id}')" class="text-xs font-bold text-slate-600 border border-slate-300 px-3 py-1 rounded-lg hover:bg-slate-50 transition-colors">Remarcar</button>
+        <button onclick="agendaRemarcar('${a.id}')" class="text-xs font-bold text-blue-600 border border-blue-400 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors">Remarcar</button>
+        <button onclick="agendaCancel('${a.id}')" class="text-xs font-bold text-amber-600 border border-amber-400 px-3 py-1 rounded-lg hover:bg-amber-50 transition-colors">Cancelar</button>
+        <button onclick="agendaDelete('${a.id}')" class="text-xs font-bold text-error border border-error px-3 py-1 rounded-lg hover:bg-red-50 transition-colors">Excluir</button>
       </div>
     </div>`;
   }).join('');
@@ -64,9 +72,25 @@ async function loadAgenda(date) {
   window._agendaData = data;
 }
 
+// Problema 5 corrigido: Editar abre o modal normalmente
 window.agendaEdit = (id) => {
   const a = (window._agendaData||[]).find(x=>x.id===id);
   if (a && window.openAppointmentModal) window.openAppointmentModal(a);
+};
+
+// Problema 5 corrigido: Remarcar abre o modal focando no campo de data/hora para fácil mudança
+window.agendaRemarcar = (id) => {
+  const a = (window._agendaData||[]).find(x=>x.id===id);
+  if (!a || !window.openAppointmentModal) return;
+  window.openAppointmentModal(a);
+  // Focar no campo de data após abertura do modal para indicar intenção de remarcar
+  requestAnimationFrame(() => {
+    const dateInput = document.getElementById('appointmentDate');
+    if (dateInput) {
+      dateInput.focus();
+      dateInput.select?.();
+    }
+  });
 };
 
 window.agendaCancel = async (id) => {
@@ -76,9 +100,22 @@ window.agendaCancel = async (id) => {
   loadAgenda(selectedDate);
 };
 
-window.agendaRemarcar = (id) => {
-  const a = (window._agendaData||[]).find(x=>x.id===id);
-  if (a && window.openAppointmentModal) window.openAppointmentModal(a);
+// Problema 8 corrigido: Botão de excluir permanentemente
+window.agendaDelete = async (id) => {
+  const r = await Swal.fire({
+    title:'Excluir permanentemente?',
+    text:'Este agendamento será removido e não poderá ser recuperado.',
+    icon:'warning',
+    showCancelButton:true,
+    confirmButtonText:'Sim, excluir',
+    cancelButtonText:'Cancelar',
+    confirmButtonColor:'#ba1a1a'
+  });
+  if (!r.isConfirmed) return;
+  const { error } = await window.supabase.from('appointments').delete().eq('id',id);
+  if (error) { Swal.fire({icon:'error',title:'Erro',text:error.message}); return; }
+  Swal.fire({icon:'success',title:'Excluído!',timer:1500,showConfirmButton:false});
+  loadAgenda(selectedDate);
 };
 
 document.addEventListener('DOMContentLoaded', () => {
