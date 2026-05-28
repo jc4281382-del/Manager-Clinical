@@ -7,42 +7,42 @@ function injectAppointmentModal() {
   if (document.getElementById('appointmentModal')) return;
   document.body.insertAdjacentHTML('beforeend', `
   <div id="appointmentModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/50 backdrop-blur-sm opacity-0 transition-opacity">
-    <div id="modalBox" class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 scale-95 transition-transform max-h-[90vh] overflow-y-auto">
-      <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+    <div id="modalBox" class="bg-surface-container rounded-2xl shadow-2xl w-full max-w-lg mx-4 scale-95 transition-transform max-h-[90vh] overflow-y-auto">
+      <div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center sticky top-0 bg-surface-container z-10">
         <h2 class="text-xl font-bold text-primary" id="modalTitle">Novo Agendamento</h2>
-        <button id="closeModalBtn" class="p-2 rounded-full hover:bg-slate-100"><span class="material-symbols-outlined text-slate-500">close</span></button>
+        <button id="closeModalBtn" class="p-2 rounded-full hover:bg-surface-container"><span class="material-symbols-outlined text-on-surface-variant">close</span></button>
       </div>
       <form id="appointmentForm" class="p-6 space-y-4">
         <input type="hidden" id="appointmentId">
         <input type="hidden" id="existingPatientId">
-        <div class="bg-slate-50 p-4 rounded-xl space-y-3">
+        <div class="bg-surface-container-low p-4 rounded-xl space-y-3">
           <h3 class="text-sm font-bold text-primary">Dados do Paciente</h3>
-          <input type="text" id="patientName" required placeholder="Nome completo *" class="w-full rounded-xl border border-slate-200 py-2.5 px-3 text-sm focus:border-primary outline-none">
+          <input type="text" id="patientName" required placeholder="Nome completo *" class="w-full rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
           <div class="grid grid-cols-2 gap-3">
-            <input type="tel" id="patientPhone" required placeholder="Celular *" class="rounded-xl border border-slate-200 py-2.5 px-3 text-sm focus:border-primary outline-none">
-            <input type="email" id="patientEmail" placeholder="E-mail (opcional)" class="rounded-xl border border-slate-200 py-2.5 px-3 text-sm focus:border-primary outline-none">
+            <input type="tel" id="patientPhone" required placeholder="Celular *" class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
+            <input type="email" id="patientEmail" placeholder="E-mail (opcional)" class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
           </div>
         </div>
-        <div class="bg-slate-50 p-4 rounded-xl space-y-3">
+        <div class="bg-surface-container-low p-4 rounded-xl space-y-3">
           <h3 class="text-sm font-bold text-primary">Dados da Consulta</h3>
           <div class="grid grid-cols-2 gap-3">
-            <input type="date" id="appointmentDate" required class="rounded-xl border border-slate-200 py-2.5 px-3 text-sm focus:border-primary outline-none">
-            <input type="time" id="appointmentTime" required class="rounded-xl border border-slate-200 py-2.5 px-3 text-sm focus:border-primary outline-none">
+            <input type="date" id="appointmentDate" required class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
+            <input type="time" id="appointmentTime" required class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
           </div>
           <div class="grid grid-cols-2 gap-3">
-            <select id="appointmentType" class="rounded-xl border border-slate-200 py-2.5 px-3 text-sm focus:border-primary outline-none">
+            <select id="appointmentType" class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
               <option>Consulta</option><option>Retorno</option><option>Avaliação</option><option>Procedimento</option>
             </select>
-            <input type="number" step="0.01" id="appointmentValue" value="0" placeholder="Valor R$" class="rounded-xl border border-slate-200 py-2.5 px-3 text-sm focus:border-primary outline-none">
+            <input type="number" step="0.01" id="appointmentValue" value="0" placeholder="Valor R$" class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
           </div>
           <div id="statusContainer" class="hidden">
-            <select id="appointmentStatus" class="w-full rounded-xl border border-slate-200 py-2.5 px-3 text-sm focus:border-primary outline-none font-bold text-primary">
+            <select id="appointmentStatus" class="w-full rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none font-bold text-primary">
               <option>Agendado</option><option>Confirmado</option><option>Realizado</option><option>Cancelado</option><option>Faltou</option>
             </select>
           </div>
         </div>
         <div class="flex justify-end gap-3 pt-2">
-          <button type="button" id="cancelModalBtn" class="px-5 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100">Cancelar</button>
+          <button type="button" id="cancelModalBtn" class="px-5 py-2.5 rounded-xl font-bold text-on-surface-variant hover:bg-surface-container">Cancelar</button>
           <button type="submit" id="saveBtn" class="bg-primary text-white px-6 py-2.5 rounded-xl font-bold hover:bg-primary-container shadow-lg transition-colors">Salvar</button>
         </div>
       </form>
@@ -234,7 +234,7 @@ function injectAppointmentModal() {
           .update({ scheduled_at, appointment_type: type, value, status }).eq('id', id);
         if (ue) throw ue;
       }
-      Swal.fire({ icon:'success', title: id ? 'Atualizado!' : 'Agendado!', timer:2000, showConfirmButton:false, confirmButtonColor:'#005258' });
+      Swal.fire({ icon:'success', title: id ? 'Atualizado!' : 'Agendado!', timer:2000, showConfirmButton:false, confirmButtonColor:'#1826B0' });
       close();
       document.dispatchEvent(new Event('appointmentSaved'));
     } catch(err) {

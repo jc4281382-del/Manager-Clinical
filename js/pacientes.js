@@ -68,7 +68,7 @@ function renderPacientes(patients, appCounts, lastStatus) {
 
   const statusColors = {
     Realizado:'bg-emerald-50 text-emerald-700', Confirmado:'bg-blue-50 text-blue-700',
-    Agendado:'bg-slate-100 text-slate-600', Cancelado:'bg-red-50 text-red-700',
+    Agendado:'bg-surface-container text-on-surface-variant', Cancelado:'bg-red-50 text-red-700',
     Faltou:'bg-amber-50 text-amber-700'
   };
 
@@ -80,7 +80,7 @@ function renderPacientes(patients, appCounts, lastStatus) {
     const sc = statusColors[status] || '';
     const since = p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR') : '—';
     return `
-    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-4 space-y-3 hover:shadow-md transition-shadow">
+    <div class="bg-surface-container rounded-xl border border-outline-variant shadow-sm p-4 space-y-3 hover:shadow-md transition-shadow">
       <div class="flex items-center gap-3">
         <div class="w-11 h-11 rounded-full bg-teal-100 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">${ini}</div>
         <div class="min-w-0 flex-1">

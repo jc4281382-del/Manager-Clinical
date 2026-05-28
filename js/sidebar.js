@@ -5,12 +5,12 @@ function injectSidebar() {
   <!-- Overlay -->
   <div id="sidebarOverlay" class="fixed inset-0 z-[150] bg-black/40 hidden opacity-0 transition-opacity" onclick="closeSidebar()"></div>
   <!-- Sidebar -->
-  <aside id="sidebarMenu" class="fixed left-0 top-0 h-full w-72 z-[160] bg-white shadow-2xl flex flex-col -translate-x-full transition-transform duration-300">
+  <aside id="sidebarMenu" class="fixed left-0 top-0 h-full w-72 z-[160] bg-surface-container shadow-2xl flex flex-col -translate-x-full transition-transform duration-300">
     <!-- Perfil Header -->
     <div class="bg-gradient-to-br from-primary to-primary-container p-6 text-white">
       <div class="relative w-20 h-20 mx-auto mb-3">
-        <img id="sidebarPhoto" src="https://ui-avatars.com/api/?name=P&background=1a6b72&color=fff&size=80" class="w-20 h-20 rounded-full object-cover border-4 border-white/30">
-        <label for="photoUpload" class="absolute bottom-0 right-0 w-7 h-7 bg-white rounded-full flex items-center justify-center cursor-pointer shadow-md">
+        <img id="sidebarPhoto" src="https://ui-avatars.com/api/?name=P&background=442db5&color=fff&size=80" class="w-20 h-20 rounded-full object-cover border-4 border-white/30">
+        <label for="photoUpload" class="absolute bottom-0 right-0 w-7 h-7 bg-surface-container rounded-full flex items-center justify-center cursor-pointer shadow-md">
           <span class="material-symbols-outlined text-primary text-sm">photo_camera</span>
         </label>
         <input type="file" id="photoUpload" accept="image/*" class="hidden" onchange="uploadPhoto(this)">
@@ -20,19 +20,19 @@ function injectSidebar() {
     </div>
     <!-- Menu Items -->
     <nav class="flex-1 py-4 overflow-y-auto">
-      <button onclick="openProfile()" class="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-slate-50 transition-colors text-left">
+      <button onclick="openProfile()" class="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-surface-container-low transition-colors text-left">
         <span class="material-symbols-outlined text-primary">person</span>
         <span class="font-semibold text-on-surface">Meu Perfil</span>
       </button>
-      <button onclick="openRelatorio()" class="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-slate-50 transition-colors text-left">
+      <button onclick="openRelatorio()" class="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-surface-container-low transition-colors text-left">
         <span class="material-symbols-outlined text-primary">download</span>
         <span class="font-semibold text-on-surface">Relatório</span>
       </button>
-      <a href="https://wa.me/5521992341112" target="_blank" class="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-slate-50 transition-colors">
+      <a href="https://wa.me/5521992341112" target="_blank" class="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-surface-container-low transition-colors">
         <span class="material-symbols-outlined text-green-600">support_agent</span>
         <span class="font-semibold text-on-surface">Suporte WhatsApp</span>
       </a>
-      <hr class="my-2 border-slate-100">
+      <hr class="my-2 border-outline-variant">
       <button onclick="logout()" class="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-red-50 transition-colors text-left">
         <span class="material-symbols-outlined text-error">logout</span>
         <span class="font-semibold text-error">Sair</span>
@@ -42,23 +42,23 @@ function injectSidebar() {
 
   <!-- Modal Perfil -->
   <div id="profileModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/50">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-      <div class="px-6 py-4 border-b flex justify-between items-center sticky top-0 bg-white">
+    <div class="bg-surface-container rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="px-6 py-4 border-b flex justify-between items-center sticky top-0 bg-surface-container">
         <h2 class="font-bold text-primary text-xl">Meu Perfil</h2>
-        <button onclick="document.getElementById('profileModal').classList.add('hidden');document.getElementById('profileModal').classList.remove('flex')" class="p-2 hover:bg-slate-100 rounded-full">
-          <span class="material-symbols-outlined text-slate-500">close</span>
+        <button onclick="document.getElementById('profileModal').classList.add('hidden');document.getElementById('profileModal').classList.remove('flex')" class="p-2 hover:bg-surface-container rounded-full">
+          <span class="material-symbols-outlined text-on-surface-variant">close</span>
         </button>
       </div>
       <form id="profileForm" class="p-6 space-y-4" onsubmit="saveProfile(event)">
         <div><label class="text-sm font-bold text-on-surface-variant block mb-1">Nome Preferido</label>
-          <input type="text" id="prefName" class="w-full rounded-xl border border-slate-200 py-2.5 px-3 outline-none focus:border-primary text-sm"></div>
+          <input type="text" id="prefName" class="w-full rounded-xl border border-outline-variant py-2.5 px-3 outline-none focus:border-primary text-sm"></div>
         <div><label class="text-sm font-bold text-on-surface-variant block mb-1">Nome Completo</label>
-          <input type="text" id="fullName" class="w-full rounded-xl border border-slate-200 py-2.5 px-3 outline-none focus:border-primary text-sm"></div>
+          <input type="text" id="fullName" class="w-full rounded-xl border border-outline-variant py-2.5 px-3 outline-none focus:border-primary text-sm"></div>
         <div class="grid grid-cols-2 gap-3">
           <div><label class="text-sm font-bold text-on-surface-variant block mb-1">Início Atendimento</label>
-            <input type="time" id="workStart" class="w-full rounded-xl border border-slate-200 py-2.5 px-3 outline-none focus:border-primary text-sm"></div>
+            <input type="time" id="workStart" class="w-full rounded-xl border border-outline-variant py-2.5 px-3 outline-none focus:border-primary text-sm"></div>
           <div><label class="text-sm font-bold text-on-surface-variant block mb-1">Fim Atendimento</label>
-            <input type="time" id="workEnd" class="w-full rounded-xl border border-slate-200 py-2.5 px-3 outline-none focus:border-primary text-sm"></div>
+            <input type="time" id="workEnd" class="w-full rounded-xl border border-outline-variant py-2.5 px-3 outline-none focus:border-primary text-sm"></div>
         </div>
         <button type="submit" class="w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary-container transition-colors">Salvar Perfil</button>
       </form>
@@ -67,26 +67,26 @@ function injectSidebar() {
 
   <!-- Modal Relatório Download -->
   <div id="relatorioModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/50">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
+    <div class="bg-surface-container rounded-2xl shadow-2xl w-full max-w-sm mx-4">
       <div class="px-6 py-4 border-b flex justify-between items-center">
         <h2 class="font-bold text-primary text-xl">Gerar Relatório</h2>
-        <button onclick="document.getElementById('relatorioModal').classList.add('hidden');document.getElementById('relatorioModal').classList.remove('flex')" class="p-2 hover:bg-slate-100 rounded-full">
-          <span class="material-symbols-outlined text-slate-500">close</span>
+        <button onclick="document.getElementById('relatorioModal').classList.add('hidden');document.getElementById('relatorioModal').classList.remove('flex')" class="p-2 hover:bg-surface-container rounded-full">
+          <span class="material-symbols-outlined text-on-surface-variant">close</span>
         </button>
       </div>
       <div class="p-6 space-y-3">
-        <button onclick="downloadRelatorio('hoje')" class="w-full py-3 px-4 rounded-xl border border-slate-200 font-semibold hover:bg-slate-50 text-left flex items-center gap-3">
+        <button onclick="downloadRelatorio('hoje')" class="w-full py-3 px-4 rounded-xl border border-outline-variant font-semibold hover:bg-surface-container-low text-left flex items-center gap-3">
           <span class="material-symbols-outlined text-primary">today</span> Hoje
         </button>
-        <button onclick="downloadRelatorio('semana')" class="w-full py-3 px-4 rounded-xl border border-slate-200 font-semibold hover:bg-slate-50 text-left flex items-center gap-3">
+        <button onclick="downloadRelatorio('semana')" class="w-full py-3 px-4 rounded-xl border border-outline-variant font-semibold hover:bg-surface-container-low text-left flex items-center gap-3">
           <span class="material-symbols-outlined text-primary">date_range</span> Essa Semana
         </button>
-        <button onclick="downloadRelatorio('mes')" class="w-full py-3 px-4 rounded-xl border border-slate-200 font-semibold hover:bg-slate-50 text-left flex items-center gap-3">
+        <button onclick="downloadRelatorio('mes')" class="w-full py-3 px-4 rounded-xl border border-outline-variant font-semibold hover:bg-surface-container-low text-left flex items-center gap-3">
           <span class="material-symbols-outlined text-primary">calendar_month</span> Esse Mês
         </button>
         <div class="flex gap-2">
-          <input type="date" id="relatorioDateFrom" class="flex-1 rounded-xl border border-slate-200 py-2.5 px-3 text-sm outline-none focus:border-primary">
-          <input type="date" id="relatorioDateTo" class="flex-1 rounded-xl border border-slate-200 py-2.5 px-3 text-sm outline-none focus:border-primary">
+          <input type="date" id="relatorioDateFrom" class="flex-1 rounded-xl border border-outline-variant py-2.5 px-3 text-sm outline-none focus:border-primary">
+          <input type="date" id="relatorioDateTo" class="flex-1 rounded-xl border border-outline-variant py-2.5 px-3 text-sm outline-none focus:border-primary">
         </div>
         <button onclick="downloadRelatorio('custom')" class="w-full py-3 px-4 rounded-xl bg-primary text-white font-bold hover:bg-primary-container transition-colors flex items-center justify-center gap-2">
           <span class="material-symbols-outlined">download</span> Baixar Período Personalizado

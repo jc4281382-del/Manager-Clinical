@@ -52,11 +52,11 @@ async function loadAgenda(date) {
     const ini = name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     const statusColors = {
       Realizado:'bg-emerald-50 text-emerald-700', Confirmado:'bg-blue-50 text-blue-700',
-      Agendado:'bg-slate-100 text-slate-600', Cancelado:'bg-red-50 text-red-700', Faltou:'bg-amber-50 text-amber-700'
+      Agendado:'bg-surface-container text-on-surface-variant', Cancelado:'bg-red-50 text-red-700', Faltou:'bg-amber-50 text-amber-700'
     };
-    const sc = statusColors[a.status] || 'bg-slate-100 text-slate-600';
+    const sc = statusColors[a.status] || 'bg-surface-container text-on-surface-variant';
     return `
-    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4 flex justify-between items-center gap-4">
+    <div class="bg-surface-container rounded-xl shadow-sm border border-outline-variant p-4 flex justify-between items-center gap-4">
       <div class="flex items-center gap-3 min-w-0">
         <div class="text-center min-w-[48px]">
           <p class="font-extrabold text-primary text-lg leading-none">${time}</p>

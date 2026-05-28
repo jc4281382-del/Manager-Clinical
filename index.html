@@ -2,12 +2,12 @@
 <html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://cdn-icons-png.flaticon.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; font-src https://fonts.gstatic.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://cdn-icons-png.flaticon.com https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; font-src https://fonts.gstatic.com;">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
     <title>Manager Clinic - Login</title>
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#005258">
+    <meta name="theme-color" content="#1826B0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Manager Clinic">
@@ -22,12 +22,12 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#005258",
-                        "primary-container": "#1a6b72",
-                        surface: "#f7fafa",
-                        "on-surface": "#191c1d",
-                        "on-surface-variant": "#3f484a",
-                        outline: "#6f797a",
+                        primary: "#1826B0",
+                        "primary-container": "#442db5",
+                        surface: "#121212",
+                        "on-surface": "#ffffff",
+                        "on-surface-variant": "#a0a0a0",
+                        outline: "#333333",
                         error: "#ba1a1a"
                     },
                     fontFamily: { body: ["Manrope"] }
@@ -35,14 +35,14 @@
             }
         }
     </script>
-    <style>body { font-family: 'Manrope', sans-serif; background-color: #f7fafa; }</style>
+    <style>body { font-family: 'Manrope', sans-serif; background-color: #121212; }</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
     <!-- Decorative background elements -->
     <div class="absolute top-[-10%] left-[-10%] w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-80 h-80 bg-[#1a6b72]/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-80 h-80 bg-[#442db5]/10 rounded-full blur-3xl"></div>
 
-    <div class="w-full max-w-md bg-white p-8 rounded-3xl shadow-xl z-10 border border-[#EEF2F5]">
+    <div class="w-full max-w-md bg-surface-container p-8 rounded-3xl shadow-xl z-10 border border-[#EEF2F5]">
         <div class="text-center mb-8 flex flex-col items-center">
             <img src="logo.png" alt="Manager Clinic Logo" class="w-32 h-auto mb-4" onerror="this.style.display='none'">
             <h1 class="text-3xl font-extrabold text-primary tracking-tight">Manager Clinic</h1>

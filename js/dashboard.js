@@ -97,13 +97,13 @@ function renderAppointments(apps) {
     const statusColors = {
       Realizado: 'bg-emerald-50 text-emerald-700 border-emerald-200',
       Confirmado: 'bg-blue-50 text-blue-700 border-blue-200',
-      Agendado: 'bg-slate-100 text-slate-600 border-slate-200',
+      Agendado: 'bg-surface-container text-on-surface-variant border-outline-variant',
       Cancelado: 'bg-red-50 text-red-700 border-red-200',
       Faltou: 'bg-amber-50 text-amber-700 border-amber-200'
     };
-    const sc = statusColors[a.status] || 'bg-slate-100 text-slate-600 border-slate-200';
+    const sc = statusColors[a.status] || 'bg-surface-container text-on-surface-variant border-outline-variant';
     return `
-    <tr class="hover:bg-slate-50/50 transition-colors ${a.status==='Cancelado'?'opacity-60':''}">
+    <tr class="hover:bg-surface-container-low/50 transition-colors ${a.status==='Cancelado'?'opacity-60':''}">
       <td class="px-4 py-4 font-bold text-primary whitespace-nowrap">${time}</td>
       <td class="px-4 py-4">
         <div class="flex items-center gap-3">
@@ -149,7 +149,7 @@ window.deleteAppointment = async (id) => {
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#ba1a1a',
-    cancelButtonColor: '#6f797a',
+    cancelButtonColor: '#333333',
     confirmButtonText: 'Sim, excluir',
     cancelButtonText: 'Cancelar'
   });

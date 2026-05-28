@@ -2,11 +2,11 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://cdn-icons-png.flaticon.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; font-src https://fonts.gstatic.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://cdn-icons-png.flaticon.com https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; font-src https://fonts.gstatic.com;">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Manager Clinic - Home</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#005258">
+  <meta name="theme-color" content="#1826B0">
   <meta name="mobile-web-app-capable" content="yes">
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -16,35 +16,35 @@
   <script>
     tailwind.config = {
       theme: { extend: { colors: {
-        primary:"#005258", "primary-container":"#1a6b72", surface:"#f7fafa",
-        "on-surface":"#191c1d", "on-surface-variant":"#3f484a",
-        secondary:"#006c48", error:"#ba1a1a", outline:"#6f797a",
-        "surface-container":"#eceeee","surface-container-low":"#f2f4f4",
-        "outline-variant":"#bec8c9"
+        primary:"#1826B0", "primary-container":"#442db5", surface:"#121212",
+        "on-surface":"#ffffff", "on-surface-variant":"#a0a0a0",
+        secondary:"#7634d8", error:"#ba1a1a", outline:"#333333",
+        "surface-container":"#1e1e1e","surface-container-low":"#181818",
+        "outline-variant":"#444444"
       }, fontFamily:{body:["Manrope"]} } }
     }
   </script>
   <style>
-    body { font-family:'Manrope',sans-serif; background:#f7fafa; min-height:100dvh; }
+    body { font-family:'Manrope',sans-serif; background:#121212; min-height:100dvh; }
     .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
   </style>
 </head>
 <body class="text-on-surface pb-28">
 
   <!-- Header -->
-  <header class="flex justify-between items-center w-full px-4 py-3 sticky top-0 z-50 bg-white shadow-sm border-b border-slate-100">
+  <header class="flex justify-between items-center w-full px-4 py-3 sticky top-0 z-50 bg-surface-container shadow-sm border-b border-outline-variant">
     <div class="flex items-center gap-3">
-      <button id="btnHamburger" class="p-1.5 rounded-xl hover:bg-slate-100 transition-colors active:scale-95">
+      <button id="btnHamburger" class="p-1.5 rounded-xl hover:bg-surface-container transition-colors active:scale-95">
         <span class="material-symbols-outlined text-primary">menu</span>
       </button>
       <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-primary-container">
-        <img id="profilePhoto" src="https://ui-avatars.com/api/?name=P&background=1a6b72&color=fff" class="w-full h-full object-cover" alt="Perfil">
+        <img id="profilePhoto" src="https://ui-avatars.com/api/?name=P&background=442db5&color=fff" class="w-full h-full object-cover" alt="Perfil">
       </div>
       <span class="font-extrabold text-primary text-lg tracking-tight">Manager Clinic</span>
     </div>
     <div class="flex items-center gap-1">
-      <button id="btnSearch" class="p-2 rounded-xl hover:bg-slate-100 transition-colors">
-        <span class="material-symbols-outlined text-slate-500">search</span>
+      <button id="btnSearch" class="p-2 rounded-xl hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-on-surface-variant">search</span>
       </button>
     </div>
   </header>
@@ -65,7 +65,7 @@
 
     <!-- Barra de Busca (oculta por padrão) -->
     <div id="searchBar" class="hidden mb-4">
-      <input id="searchInput" type="text" placeholder="Buscar paciente pelo nome..." class="w-full rounded-xl border border-outline-variant py-2.5 px-4 text-sm focus:border-primary outline-none bg-white shadow-sm">
+      <input id="searchInput" type="text" placeholder="Buscar paciente pelo nome..." class="w-full rounded-xl border border-outline-variant py-2.5 px-4 text-sm focus:border-primary outline-none bg-surface-container shadow-sm">
     </div>
 
     <!-- Filtro por Status -->
@@ -80,37 +80,37 @@
 
     <!-- Cards de Stats -->
     <section class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
-      <div class="col-span-2 sm:col-span-1 bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+      <div class="col-span-2 sm:col-span-1 bg-surface-container p-4 rounded-xl shadow-sm border border-outline-variant">
         <p class="text-xs font-bold text-on-surface-variant">Hoje</p>
         <p id="statTotal" class="text-3xl font-extrabold text-primary mt-2">00</p>
       </div>
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+      <div class="bg-surface-container p-4 rounded-xl shadow-sm border border-outline-variant">
         <p class="text-xs font-bold text-on-surface-variant">Faturamento</p>
         <p id="statRevenue" class="text-lg font-extrabold text-primary mt-2">R$ 0,00</p>
       </div>
-      <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-l-secondary border border-slate-100">
+      <div class="bg-surface-container p-4 rounded-xl shadow-sm border-l-4 border-l-secondary border border-outline-variant">
         <p class="text-xs font-bold text-on-surface-variant">Realizados</p>
         <p id="statRealizados" class="text-3xl font-extrabold text-secondary mt-2">00</p>
       </div>
-      <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-l-error border border-slate-100">
+      <div class="bg-surface-container p-4 rounded-xl shadow-sm border-l-4 border-l-error border border-outline-variant">
         <p class="text-xs font-bold text-on-surface-variant">Cancelados</p>
         <p id="statCancelados" class="text-3xl font-extrabold text-error mt-2">00</p>
       </div>
-      <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-l-slate-400 border border-slate-100">
+      <div class="bg-surface-container p-4 rounded-xl shadow-sm border-l-4 border-l-slate-400 border border-outline-variant">
         <p class="text-xs font-bold text-on-surface-variant">Faltou</p>
-        <p id="statFaltou" class="text-3xl font-extrabold text-slate-500 mt-2">00</p>
+        <p id="statFaltou" class="text-3xl font-extrabold text-on-surface-variant mt-2">00</p>
       </div>
     </section>
 
     <!-- Tabela de Compromissos -->
-    <section class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-      <div class="px-4 py-4 border-b border-slate-100">
+    <section class="bg-surface-container rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+      <div class="px-4 py-4 border-b border-outline-variant">
         <h2 class="text-base font-bold text-primary">Compromissos de Hoje</h2>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead>
-            <tr class="bg-slate-50 text-on-surface-variant text-xs font-bold uppercase tracking-wide">
+            <tr class="bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-wide">
               <th class="px-4 py-3">Hora</th>
               <th class="px-4 py-3">Paciente</th>
               <th class="px-4 py-3">Valor</th>
@@ -127,7 +127,7 @@
   </main>
 
   <!-- Bottom Nav -->
-  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-white/90 backdrop-blur-md border-t border-slate-100 shadow-lg rounded-t-2xl">
+  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-surface-container/90 backdrop-blur-md border-t border-outline-variant shadow-lg rounded-t-2xl">
     <a href="dashboard.html" class="flex flex-col items-center bg-teal-50 text-primary rounded-xl px-4 py-1.5 active:scale-90 transition-transform">
       <span class="material-symbols-outlined text-[22px]" style="font-variation-settings:'FILL' 1">home</span>
       <span class="text-[11px] font-bold">Home</span>
