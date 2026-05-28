@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co; font-src https://fonts.gstatic.com;">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
     <title>Manager Clinic - Login</title>
     <!-- PWA Meta Tags -->
@@ -123,6 +124,23 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // --- INÍCIO RATE LIMITING ---
+            const agora = Date.now();
+            let attempts = parseInt(localStorage.getItem('login_attempts') || '0', 10);
+            let lockoutUntil = parseInt(localStorage.getItem('login_lockout_until') || '0', 10);
+
+            if (lockoutUntil > agora) {
+                const waitSecs = Math.ceil((lockoutUntil - agora) / 1000);
+                Swal.fire({ icon: 'warning', title: 'Acesso Bloqueado', text: `Muitas tentativas falhas. Tente novamente em ${waitSecs} segundos.` });
+                return;
+            } else if (lockoutUntil <= agora && lockoutUntil > 0) {
+                attempts = 0;
+                localStorage.removeItem('login_attempts');
+                localStorage.removeItem('login_lockout_until');
+            }
+            // --- FIM RATE LIMITING ---
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
@@ -134,10 +152,19 @@
                     // LOGIN
                     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
                     if (error) {
-                        Swal.fire({ icon: 'error', title: 'Erro ao entrar', text: error.message });
+                        attempts++;
+                        localStorage.setItem('login_attempts', attempts.toString());
+                        if (attempts >= 5) {
+                            localStorage.setItem('login_lockout_until', (Date.now() + 30000).toString());
+                            Swal.fire({ icon: 'error', title: 'Acesso Bloqueado', text: 'Você errou a senha 5 vezes consecutivas. Aguarde 30 segundos.' });
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Erro ao entrar', text: error.message + ` (Tentativa ${attempts}/5)` });
+                        }
                         submitBtn.disabled = false;
                         submitBtn.innerText = 'Entrar';
                     } else {
+                        localStorage.removeItem('login_attempts');
+                        localStorage.removeItem('login_lockout_until');
                         window.location.href = 'dashboard.html';
                     }
                 } else {

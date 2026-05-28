@@ -1,4 +1,12 @@
 // ── Agenda JS ────────────────────────────────────────────────────────────────
+(async () => {
+  const { data: { session } } = await window.supabase.auth.getSession();
+  if (!session) window.location.href = 'index.html';
+})();
+window.sanitizeInput = function(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[<>"'`]/g, (c) => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
+};
 // Bug 2 corrigido: offset de fuso horário aplicado na query
 let selectedDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local (evita UTC)
 
@@ -40,7 +48,7 @@ async function loadAgenda(date) {
   list.innerHTML = data.map(a => {
     const dt = new Date(a.scheduled_at);
     const time = dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    const name = a.patients?.full_name || '—';
+    const name = window.sanitizeInput(a.patients?.full_name || '—');
     const ini = name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     const statusColors = {
       Realizado:'bg-emerald-50 text-emerald-700', Confirmado:'bg-blue-50 text-blue-700',
@@ -56,7 +64,7 @@ async function loadAgenda(date) {
         <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center font-bold text-primary text-sm flex-shrink-0">${ini}</div>
         <div class="min-w-0">
           <p class="font-bold text-on-surface truncate">${name}</p>
-          <p class="text-xs text-on-surface-variant">${a.appointment_type} · R$ ${(a.value||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</p>
+          <p class="text-xs text-on-surface-variant">${window.sanitizeInput(a.appointment_type)} · R$ ${(a.value||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</p>
           <span class="text-xs font-bold px-2 py-0.5 rounded-full ${sc} mt-1 inline-block">${a.status}</span>
         </div>
       </div>

@@ -1,4 +1,8 @@
 // ── Modal de Agendamento ─────────────────────────────────────────────────────
+window.sanitizeInput = function(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[<>"'`]/g, (c) => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
+};
 function injectAppointmentModal() {
   if (document.getElementById('appointmentModal')) return;
   document.body.insertAdjacentHTML('beforeend', `

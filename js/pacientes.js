@@ -1,4 +1,12 @@
 // ── Pacientes JS ─────────────────────────────────────────────────────────────
+(async () => {
+  const { data: { session } } = await window.supabase.auth.getSession();
+  if (!session) window.location.href = 'index.html';
+})();
+window.sanitizeInput = function(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[<>"'`]/g, (c) => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
+};
 // Problema 9 corrigido: exibir pacientes ÚNICOS em vez de agendamentos
 // Busca por nome ou telefone adicionada
 
@@ -53,7 +61,7 @@ function renderPacientes(patients, appCounts, lastStatus) {
   if (filtered.length === 0) {
     container.innerHTML = `<div class="text-center py-16 text-on-surface-variant col-span-full">
       <span class="material-symbols-outlined text-5xl opacity-30 block mb-2">person_off</span>
-      ${patientSearch ? 'Nenhum paciente encontrado para esta busca.' : 'Nenhum paciente cadastrado ainda.'}
+      ${window.sanitizeInput(patientSearch) ? 'Nenhum paciente encontrado para esta busca.' : 'Nenhum paciente cadastrado ainda.'}
     </div>`;
     return;
   }
@@ -65,7 +73,7 @@ function renderPacientes(patients, appCounts, lastStatus) {
   };
 
   container.innerHTML = filtered.map(p => {
-    const name = p.full_name || '—';
+    const name = window.sanitizeInput(p.full_name || '—');
     const ini = name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
     const total = appCounts[p.id] || 0;
     const status = lastStatus[p.id];
@@ -77,11 +85,11 @@ function renderPacientes(patients, appCounts, lastStatus) {
         <div class="w-11 h-11 rounded-full bg-teal-100 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">${ini}</div>
         <div class="min-w-0 flex-1">
           <p class="font-bold text-on-surface truncate">${name}</p>
-          <p class="text-xs text-on-surface-variant">${p.phone || 'Sem telefone'}</p>
+          <p class="text-xs text-on-surface-variant">${window.sanitizeInput(p.phone || 'Sem telefone')}</p>
         </div>
         ${status ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${sc} flex-shrink-0">${status}</span>` : ''}
       </div>
-      ${p.email ? `<p class="text-xs text-on-surface-variant truncate">${p.email}</p>` : ''}
+      ${p.email ? `<p class="text-xs text-on-surface-variant truncate">${window.sanitizeInput(p.email)}</p>` : ''}
       <div class="flex items-center justify-between pt-1 border-t border-slate-50">
         <span class="text-xs text-on-surface-variant">${total} consulta${total !== 1 ? 's' : ''}</span>
         <span class="text-xs text-on-surface-variant">desde ${since}</span>

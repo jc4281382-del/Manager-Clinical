@@ -1,4 +1,12 @@
 // ── Financeiro / Relatórios ──────────────────────────────────────────────────
+(async () => {
+  const { data: { session } } = await window.supabase.auth.getSession();
+  if (!session) window.location.href = 'index.html';
+})();
+window.sanitizeInput = function(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[<>"'`]/g, (c) => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
+};
 let currentPeriod = 'mes';
 
 async function loadFinanceiro(period, customFrom, customTo) {
@@ -78,8 +86,8 @@ async function loadFinanceiro(period, customFrom, customTo) {
     const sc = {Realizado:'text-emerald-600',Cancelado:'text-red-600',Faltou:'text-amber-600',Confirmado:'text-blue-600',Agendado:'text-slate-600'}[a.status]||'text-slate-600';
     return `<tr class="border-b border-slate-50 hover:bg-slate-50/50">
       <td class="px-4 py-3 text-sm">${dt.toLocaleDateString('pt-BR')}</td>
-      <td class="px-4 py-3 text-sm font-semibold">${a.patients?.full_name||'—'}</td>
-      <td class="px-4 py-3 text-sm">${a.appointment_type}</td>
+      <td class="px-4 py-3 text-sm font-semibold">${window.sanitizeInput(a.patients?.full_name||'—')}</td>
+      <td class="px-4 py-3 text-sm">${window.sanitizeInput(a.appointment_type)}</td>
       <td class="px-4 py-3 text-sm font-bold">R$ ${(a.value||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
       <td class="px-4 py-3 text-sm font-bold ${sc}">${a.status}</td>
     </tr>`;

@@ -1,4 +1,12 @@
 // ── Dashboard JS ─────────────────────────────────────────────────────────────
+(async () => {
+  const { data: { session } } = await window.supabase.auth.getSession();
+  if (!session) window.location.href = 'index.html';
+})();
+window.sanitizeInput = function(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[<>"'`]/g, (c) => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
+};
 // Carrega dados reais do Supabase para o profissional logado
 
 let allAppointments = [];
@@ -84,7 +92,7 @@ function renderAppointments(apps) {
 
   tbody.innerHTML = filtered.map(a => {
     const time = new Date(a.scheduled_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    const name = a.patients?.full_name || '—';
+    const name = window.sanitizeInput(a.patients?.full_name || '—');
     const ini = name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     const statusColors = {
       Realizado: 'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -102,7 +110,7 @@ function renderAppointments(apps) {
           <div class="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-primary font-bold text-xs flex-shrink-0">${ini}</div>
           <div>
             <p class="font-semibold text-on-surface text-sm">${name}</p>
-            <p class="text-xs text-on-surface-variant">${a.appointment_type}</p>
+            <p class="text-xs text-on-surface-variant">${window.sanitizeInput(a.appointment_type)}</p>
           </div>
         </div>
       </td>
