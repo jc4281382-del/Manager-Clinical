@@ -7,6 +7,12 @@ window.sanitizeInput = function(str) {
   if (typeof str !== 'string') return str;
   return str.replace(/[<>"'`]/g, (c) => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
 };
+
+// Validação de UUID para prevenir injeção via IDs
+function isValidUUID(str) {
+  return /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(str);
+}
+
 // Carrega dados reais do Supabase para o profissional logado
 
 let allAppointments = [];
@@ -44,7 +50,7 @@ async function loadDashboard() {
     .lte('scheduled_at', `${today}T23:59:59${tzStr}`)
     .order('scheduled_at', { ascending: true });
 
-  if (error) { console.error(error); return; }
+  if (error) { console.error('loadDashboard:', error); return; }
   allAppointments = apps || [];
 
   updateStats(allAppointments);
@@ -91,6 +97,9 @@ function renderAppointments(apps) {
   }
 
   tbody.innerHTML = filtered.map(a => {
+    // VULN-02: Validar UUID antes de interpolar no HTML
+    if (!isValidUUID(a.id)) return '';
+    const safeId = a.id;
     const time = new Date(a.scheduled_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     const name = window.sanitizeInput(a.patients?.full_name || '—');
     const ini = name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
@@ -116,33 +125,58 @@ function renderAppointments(apps) {
       </td>
       <td class="px-4 py-4 font-semibold text-sm">R$ ${(a.value||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
       <td class="px-4 py-4">
-        <select onchange="updateStatus('${a.id}',this.value)" class="cursor-pointer text-xs font-bold px-2 py-1 rounded-full border ${sc} appearance-none outline-none">
+        <select data-action="updateStatus" data-id="${safeId}" class="cursor-pointer text-xs font-bold px-2 py-1 rounded-full border ${sc} appearance-none outline-none">
           ${['Agendado','Confirmado','Realizado','Cancelado','Faltou'].map(s=>`<option value="${s}" ${a.status===s?'selected':''}>${s}</option>`).join('')}
         </select>
       </td>
       <td class="px-4 py-4 flex items-center gap-2">
-        <button onclick="openEdit('${a.id}')" class="text-primary hover:underline font-bold text-sm">Editar</button>
-        <button onclick="deleteAppointment('${a.id}')" class="text-error hover:underline font-bold text-sm">Excluir</button>
+        <button data-action="edit" data-id="${safeId}" class="text-primary hover:underline font-bold text-sm">Editar</button>
+        <button data-action="delete" data-id="${safeId}" class="text-error hover:underline font-bold text-sm">Excluir</button>
       </td>
     </tr>`;
   }).join('');
+
+  // Event delegation em vez de inline onclick
+  tbody.querySelectorAll('[data-action="updateStatus"]').forEach(sel => {
+    sel.addEventListener('change', (e) => {
+      const id = e.target.dataset.id;
+      if (isValidUUID(id)) window.updateStatus(id, e.target.value);
+    });
+  });
+  tbody.querySelectorAll('[data-action="edit"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      if (isValidUUID(id)) window.openEdit(id);
+    });
+  });
+  tbody.querySelectorAll('[data-action="delete"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      if (isValidUUID(id)) window.deleteAppointment(id);
+    });
+  });
 }
 
 // ── Funções globais (declaradas UMA ÚNICA VEZ) ─────────────────────────────
 window.updateStatus = async (id, status) => {
+  if (!isValidUUID(id)) return;
+  const allowedStatuses = ['Agendado','Confirmado','Realizado','Cancelado','Faltou'];
+  if (!allowedStatuses.includes(status)) return;
   const { error } = await window.supabase.from('appointments').update({status}).eq('id',id);
-  if (error) { Swal.fire({icon:'error',title:'Erro',text:error.message}); return; }
+  if (error) { console.error('updateStatus:', error); Swal.fire({icon:'error',title:'Erro',text:'Não foi possível atualizar o status. Tente novamente.'}); return; }
   allAppointments = allAppointments.map(a => a.id===id ? {...a,status} : a);
   updateStats(allAppointments);
   renderAppointments(allAppointments);
 };
 
 window.openEdit = (id) => {
+  if (!isValidUUID(id)) return;
   const app = allAppointments.find(a=>a.id===id);
   if (app && window.openAppointmentModal) window.openAppointmentModal(app);
 };
 
 window.deleteAppointment = async (id) => {
+  if (!isValidUUID(id)) return;
   const r = await Swal.fire({
     title: 'Excluir agendamento?',
     text: "Esta ação não pode ser desfeita.",
@@ -156,7 +190,8 @@ window.deleteAppointment = async (id) => {
   if (r.isConfirmed) {
     const { error } = await window.supabase.from('appointments').delete().eq('id', id);
     if (error) {
-      Swal.fire('Erro!', error.message, 'error');
+      console.error('deleteAppointment:', error);
+      Swal.fire('Erro!', 'Não foi possível excluir o agendamento. Tente novamente.', 'error');
     } else {
       Swal.fire({ icon: 'success', title: 'Excluído!', timer: 1500, showConfirmButton: false });
       loadDashboard();

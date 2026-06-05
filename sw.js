@@ -1,5 +1,5 @@
-const CACHE = 'mc-v3';
-const STATIC = ['/', '/index.html', '/dashboard.html', '/agenda.html', '/pacientes.html', '/financeiro.html', '/manifest.json'];
+const CACHE = 'mc-v4';
+const STATIC = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC)));

@@ -238,7 +238,8 @@ function injectAppointmentModal() {
       close();
       document.dispatchEvent(new Event('appointmentSaved'));
     } catch(err) {
-      Swal.fire({ icon:'error', title:'Erro', text: err.message });
+      console.error('appointmentForm:', err);
+      Swal.fire({ icon:'error', title:'Erro', text: 'Não foi possível salvar o agendamento. Verifique os dados e tente novamente.' });
     } finally {
       saveBtn.disabled = false; saveBtn.innerText = 'Salvar';
     }

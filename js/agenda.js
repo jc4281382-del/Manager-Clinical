@@ -7,6 +7,11 @@ window.sanitizeInput = function(str) {
   if (typeof str !== 'string') return str;
   return str.replace(/[<>"'`]/g, (c) => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
 };
+
+function isValidUUID(str) {
+  return /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(str);
+}
+
 // Bug 2 corrigido: offset de fuso horário aplicado na query
 let selectedDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local (evita UTC)
 
@@ -32,7 +37,7 @@ async function loadAgenda(date) {
     .lte('scheduled_at', `${date}T23:59:59${tzStr}`)
     .order('scheduled_at');
 
-  if (error) { console.error(error); return; }
+  if (error) { console.error('loadAgenda:', error); return; }
 
   const list = document.getElementById('agendaList');
   if (!list) return;
@@ -46,6 +51,8 @@ async function loadAgenda(date) {
   }
 
   list.innerHTML = data.map(a => {
+    if (!isValidUUID(a.id)) return '';
+    const safeId = a.id;
     const dt = new Date(a.scheduled_at);
     const time = dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     const name = window.sanitizeInput(a.patients?.full_name || '—');
@@ -69,24 +76,40 @@ async function loadAgenda(date) {
         </div>
       </div>
       <div class="flex flex-col gap-1.5 flex-shrink-0">
-        <button onclick="agendaEdit('${a.id}')" class="text-xs font-bold text-primary border border-primary px-3 py-1 rounded-lg hover:bg-teal-50 transition-colors">Editar</button>
-        <button onclick="agendaRemarcar('${a.id}')" class="text-xs font-bold text-blue-600 border border-blue-400 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors">Remarcar</button>
-        <button onclick="agendaCancel('${a.id}')" class="text-xs font-bold text-amber-600 border border-amber-400 px-3 py-1 rounded-lg hover:bg-amber-50 transition-colors">Cancelar</button>
-        <button onclick="agendaDelete('${a.id}')" class="text-xs font-bold text-error border border-error px-3 py-1 rounded-lg hover:bg-red-50 transition-colors">Excluir</button>
+        <button data-action="edit" data-id="${safeId}" class="text-xs font-bold text-primary border border-primary px-3 py-1 rounded-lg hover:bg-teal-50 transition-colors">Editar</button>
+        <button data-action="remarcar" data-id="${safeId}" class="text-xs font-bold text-blue-600 border border-blue-400 px-3 py-1 rounded-lg hover:bg-blue-50 transition-colors">Remarcar</button>
+        <button data-action="cancel" data-id="${safeId}" class="text-xs font-bold text-amber-600 border border-amber-400 px-3 py-1 rounded-lg hover:bg-amber-50 transition-colors">Cancelar</button>
+        <button data-action="delete" data-id="${safeId}" class="text-xs font-bold text-error border border-error px-3 py-1 rounded-lg hover:bg-red-50 transition-colors">Excluir</button>
       </div>
     </div>`;
   }).join('');
 
   window._agendaData = data;
+
+  // Event delegation para botões da agenda
+  list.querySelectorAll('[data-action="edit"]').forEach(btn => {
+    btn.addEventListener('click', () => { if (isValidUUID(btn.dataset.id)) window.agendaEdit(btn.dataset.id); });
+  });
+  list.querySelectorAll('[data-action="remarcar"]').forEach(btn => {
+    btn.addEventListener('click', () => { if (isValidUUID(btn.dataset.id)) window.agendaRemarcar(btn.dataset.id); });
+  });
+  list.querySelectorAll('[data-action="cancel"]').forEach(btn => {
+    btn.addEventListener('click', () => { if (isValidUUID(btn.dataset.id)) window.agendaCancel(btn.dataset.id); });
+  });
+  list.querySelectorAll('[data-action="delete"]').forEach(btn => {
+    btn.addEventListener('click', () => { if (isValidUUID(btn.dataset.id)) window.agendaDelete(btn.dataset.id); });
+  });
 }
 
 // Problema 5 corrigido: Editar abre o modal normalmente
 window.agendaEdit = (id) => {
+  if (!isValidUUID(id)) return;
   const a = (window._agendaData||[]).find(x=>x.id===id);
   if (a && window.openAppointmentModal) window.openAppointmentModal(a);
 };
 
 window.agendaRemarcar = (id) => {
+  if (!isValidUUID(id)) return;
   const a = (window._agendaData||[]).find(x=>x.id===id);
   if (!a || !window.openAppointmentModal) return;
   // Passa o objeto com a flag _isReschedule
@@ -94,14 +117,17 @@ window.agendaRemarcar = (id) => {
 };
 
 window.agendaCancel = async (id) => {
+  if (!isValidUUID(id)) return;
   const r = await Swal.fire({title:'Cancelar?',text:'Deseja cancelar este agendamento?',icon:'warning',showCancelButton:true,confirmButtonText:'Sim, cancelar',cancelButtonText:'Não',confirmButtonColor:'#ba1a1a'});
   if (!r.isConfirmed) return;
-  await window.supabase.from('appointments').update({status:'Cancelado'}).eq('id',id);
+  const { error } = await window.supabase.from('appointments').update({status:'Cancelado'}).eq('id',id);
+  if (error) { console.error('agendaCancel:', error); Swal.fire({icon:'error',title:'Erro',text:'Não foi possível cancelar. Tente novamente.'}); return; }
   loadAgenda(selectedDate);
 };
 
 // Problema 8 corrigido: Botão de excluir permanentemente
 window.agendaDelete = async (id) => {
+  if (!isValidUUID(id)) return;
   const r = await Swal.fire({
     title:'Excluir permanentemente?',
     text:'Este agendamento será removido e não poderá ser recuperado.',
@@ -113,7 +139,7 @@ window.agendaDelete = async (id) => {
   });
   if (!r.isConfirmed) return;
   const { error } = await window.supabase.from('appointments').delete().eq('id',id);
-  if (error) { Swal.fire({icon:'error',title:'Erro',text:error.message}); return; }
+  if (error) { console.error('agendaDelete:', error); Swal.fire({icon:'error',title:'Erro',text:'Não foi possível excluir. Tente novamente.'}); return; }
   Swal.fire({icon:'success',title:'Excluído!',timer:1500,showConfirmButton:false});
   loadAgenda(selectedDate);
 };

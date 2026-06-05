@@ -125,10 +125,17 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // --- INÍCIO RATE LIMITING ---
+            // --- INÍCIO RATE LIMITING (camada dupla: localStorage + sessionStorage) ---
             const agora = Date.now();
-            let attempts = parseInt(localStorage.getItem('login_attempts') || '0', 10);
-            let lockoutUntil = parseInt(localStorage.getItem('login_lockout_until') || '0', 10);
+            // Usar ambos storages para dificultar bypass por limpeza de um deles
+            let attempts = Math.max(
+              parseInt(localStorage.getItem('login_attempts') || '0', 10),
+              parseInt(sessionStorage.getItem('login_attempts') || '0', 10)
+            );
+            let lockoutUntil = Math.max(
+              parseInt(localStorage.getItem('login_lockout_until') || '0', 10),
+              parseInt(sessionStorage.getItem('login_lockout_until') || '0', 10)
+            );
 
             if (lockoutUntil > agora) {
                 const waitSecs = Math.ceil((lockoutUntil - agora) / 1000);
@@ -138,6 +145,8 @@
                 attempts = 0;
                 localStorage.removeItem('login_attempts');
                 localStorage.removeItem('login_lockout_until');
+                sessionStorage.removeItem('login_attempts');
+                sessionStorage.removeItem('login_lockout_until');
             }
             // --- FIM RATE LIMITING ---
 
@@ -154,17 +163,24 @@
                     if (error) {
                         attempts++;
                         localStorage.setItem('login_attempts', attempts.toString());
+                        sessionStorage.setItem('login_attempts', attempts.toString());
                         if (attempts >= 5) {
-                            localStorage.setItem('login_lockout_until', (Date.now() + 30000).toString());
-                            Swal.fire({ icon: 'error', title: 'Acesso Bloqueado', text: 'Você errou a senha 5 vezes consecutivas. Aguarde 30 segundos.' });
+                            // Lockout escalável: 60s na 5ª, 120s na 6ª, etc.
+                            const lockoutMs = Math.min(300000, (attempts - 4) * 60000);
+                            const lockoutTime = (Date.now() + lockoutMs).toString();
+                            localStorage.setItem('login_lockout_until', lockoutTime);
+                            sessionStorage.setItem('login_lockout_until', lockoutTime);
+                            Swal.fire({ icon: 'error', title: 'Acesso Bloqueado', text: `Você errou a senha ${attempts} vezes. Aguarde ${Math.ceil(lockoutMs/1000)} segundos.` });
                         } else {
-                            Swal.fire({ icon: 'error', title: 'Erro ao entrar', text: error.message + ` (Tentativa ${attempts}/5)` });
+                            Swal.fire({ icon: 'error', title: 'Credenciais inválidas', text: `E-mail ou senha incorretos. (Tentativa ${attempts}/5)` });
                         }
                         submitBtn.disabled = false;
                         submitBtn.innerText = 'Entrar';
                     } else {
                         localStorage.removeItem('login_attempts');
                         localStorage.removeItem('login_lockout_until');
+                        sessionStorage.removeItem('login_attempts');
+                        sessionStorage.removeItem('login_lockout_until');
                         window.location.href = 'dashboard.html';
                     }
                 } else {
@@ -186,7 +202,8 @@
                     });
 
                     if (error) {
-                        Swal.fire({ icon: 'error', title: 'Erro no Cadastro', text: error.message });
+                        console.error('signup:', error);
+                        Swal.fire({ icon: 'error', title: 'Erro no Cadastro', text: 'Não foi possível criar a conta. Verifique seus dados e tente novamente.' });
                         submitBtn.disabled = false;
                         submitBtn.innerText = 'Criar Conta';
                     } else {
@@ -203,8 +220,8 @@
                     }
                 }
             } catch (err) {
-                console.error("Erro inesperado:", err);
-                Swal.fire({ icon: 'error', title: 'Erro Inesperado', text: err.message || 'Ocorreu um erro de comunicação. Verifique sua internet ou tente novamente mais tarde.' });
+                console.error('Erro inesperado:', err);
+                Swal.fire({ icon: 'error', title: 'Erro Inesperado', text: 'Ocorreu um erro de comunicação. Verifique sua internet e tente novamente.' });
                 submitBtn.disabled = false;
                 submitBtn.innerText = isLogin ? 'Entrar' : 'Criar Conta';
             }

@@ -141,7 +141,7 @@ window.saveProfile = async (e) => {
     work_end: document.getElementById('workEnd').value
   };
   const { error } = await window.supabase.from('professionals').update(upd).eq('id', window.currentProfessionalId);
-  if (error) { Swal.fire({icon:'error',title:'Erro',text:error.message}); return; }
+  if (error) { console.error('saveProfile:', error); Swal.fire({icon:'error',title:'Erro',text:'Não foi possível salvar o perfil. Tente novamente.'}); return; }
   Object.assign(window.currentProfessional, upd);
   const nameEl = document.getElementById('headerProfessionalName');
   if (nameEl) nameEl.innerText = upd.preferred_name || upd.full_name;
@@ -153,14 +153,33 @@ window.saveProfile = async (e) => {
 window.uploadPhoto = async (input) => {
   const file = input.files[0];
   if (!file) return;
+  // VULN-05: Validação de tipo MIME e tamanho
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+  if (!allowedTypes.includes(file.type)) {
+    Swal.fire({icon:'error',title:'Formato inválido',text:'Envie uma imagem nos formatos: JPG, PNG, WebP ou GIF.'});
+    input.value = '';
+    return;
+  }
+  const maxSizeMB = 5;
+  if (file.size > maxSizeMB * 1024 * 1024) {
+    Swal.fire({icon:'error',title:'Arquivo muito grande',text:`A imagem deve ter no máximo ${maxSizeMB}MB.`});
+    input.value = '';
+    return;
+  }
   // Buscar auth uid para construir o path compatível com a política RLS de storage
   const { data: { session } } = await window.supabase.auth.getSession();
   if (!session) { Swal.fire({icon:'error',title:'Sessão expirada',text:'Faça login novamente.'}); return; }
   const authUid = session.user.id;
-  const ext = file.name.split('.').pop();
+  const ext = file.name.split('.').pop().toLowerCase();
+  const allowedExts = ['jpg','jpeg','png','webp','gif'];
+  if (!allowedExts.includes(ext)) {
+    Swal.fire({icon:'error',title:'Extensão inválida',text:'Extensão de arquivo não permitida.'});
+    input.value = '';
+    return;
+  }
   const path = `${authUid}/photo.${ext}`;
   const { error: ue } = await window.supabase.storage.from('profile-photos').upload(path, file, { upsert: true });
-  if (ue) { Swal.fire({icon:'error',title:'Erro ao enviar foto',text:ue.message}); return; }
+  if (ue) { console.error('uploadPhoto:', ue); Swal.fire({icon:'error',title:'Erro ao enviar foto',text:'Não foi possível enviar a foto. Tente novamente.'}); return; }
   const { data: { publicUrl } } = window.supabase.storage.from('profile-photos').getPublicUrl(path);
   await window.supabase.from('professionals').update({ photo_url: publicUrl }).eq('id', window.currentProfessionalId);
   window.currentProfessional.photo_url = publicUrl;

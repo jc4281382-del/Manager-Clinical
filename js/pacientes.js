@@ -7,6 +7,11 @@ window.sanitizeInput = function(str) {
   if (typeof str !== 'string') return str;
   return str.replace(/[<>"'`]/g, (c) => ({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
 };
+
+function isValidUUID(str) {
+  return /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(str);
+}
+
 // Problema 9 corrigido: exibir pacientes ÚNICOS em vez de agendamentos
 // Busca por nome ou telefone adicionada
 
@@ -23,7 +28,7 @@ async function loadPacientes() {
     .eq('professional_id', window.currentProfessionalId)
     .order('full_name', { ascending: true });
 
-  if (error) { console.error(error); return; }
+  if (error) { console.error('loadPacientes:', error); return; }
   allPatients = data || [];
 
   // Buscar contagem de agendamentos por paciente
@@ -73,6 +78,8 @@ function renderPacientes(patients, appCounts, lastStatus) {
   };
 
   container.innerHTML = filtered.map(p => {
+    if (!isValidUUID(p.id)) return '';
+    const safeId = p.id;
     const name = window.sanitizeInput(p.full_name || '—');
     const ini = name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
     const total = appCounts[p.id] || 0;
@@ -94,16 +101,29 @@ function renderPacientes(patients, appCounts, lastStatus) {
         <span class="text-xs text-on-surface-variant">${total} consulta${total !== 1 ? 's' : ''}</span>
         <span class="text-xs text-on-surface-variant">desde ${since}</span>
       </div>
-      <button onclick="agendarParaPaciente('${p.id}','${p.full_name?.replace(/'/g,"\\'") || ''}','${p.phone || ''}')"
+      <button data-action="agendar" data-id="${safeId}" data-name="${name}" data-phone="${window.sanitizeInput(p.phone || '')}"
         class="w-full text-xs font-bold text-primary border border-primary px-3 py-1.5 rounded-lg hover:bg-teal-50 transition-colors">
         + Novo Agendamento
       </button>
     </div>`;
   }).join('');
+
+  // VULN-07: Event delegation em vez de inline onclick com dados interpolados
+  container.querySelectorAll('[data-action="agendar"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const name = btn.dataset.name;
+      const phone = btn.dataset.phone;
+      if (isValidUUID(id)) {
+        window.agendarParaPaciente(id, name, phone);
+      }
+    });
+  });
 }
 
 // Agendar abrindo o modal já preenchido com dados do paciente
 window.agendarParaPaciente = (patientId, name, phone) => {
+  if (!isValidUUID(patientId)) return;
   if (!window.openAppointmentModal) return;
   // Passa um objeto "fake" de appointment sem id, mas com dados do paciente
   window.openAppointmentModal({
