@@ -17,26 +17,26 @@ function injectAppointmentModal() {
         <input type="hidden" id="existingPatientId">
         <div class="bg-surface-container-low p-4 rounded-xl space-y-3">
           <h3 class="text-sm font-bold text-primary">Dados do Paciente</h3>
-          <input type="text" id="patientName" required placeholder="Nome completo *" class="w-full rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
+          <input type="text" id="patientName" required placeholder="Nome completo *" class="w-full rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none text-neutral-900 bg-white">
           <div class="grid grid-cols-2 gap-3">
-            <input type="tel" id="patientPhone" required placeholder="Celular *" class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
-            <input type="email" id="patientEmail" placeholder="E-mail (opcional)" class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
+            <input type="tel" id="patientPhone" required placeholder="Celular *" class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none text-neutral-900 bg-white">
+            <input type="email" id="patientEmail" placeholder="E-mail (opcional)" class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none text-neutral-900 bg-white">
           </div>
         </div>
         <div class="bg-surface-container-low p-4 rounded-xl space-y-3">
           <h3 class="text-sm font-bold text-primary">Dados da Consulta</h3>
           <div class="grid grid-cols-2 gap-3">
-            <input type="date" id="appointmentDate" required class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
-            <input type="time" id="appointmentTime" required class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
+            <input type="date" id="appointmentDate" required class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none text-neutral-900 bg-white">
+            <input type="time" id="appointmentTime" required class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none text-neutral-900 bg-white">
           </div>
           <div class="grid grid-cols-2 gap-3">
-            <select id="appointmentType" class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
+            <select id="appointmentType" class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none text-neutral-900 bg-white">
               <option>Consulta</option><option>Retorno</option><option>Avaliação</option><option>Procedimento</option>
             </select>
-            <input type="number" step="0.01" id="appointmentValue" value="0" placeholder="Valor R$" class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none">
+            <input type="number" step="0.01" id="appointmentValue" value="0" placeholder="Valor R$" class="rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none text-neutral-900 bg-white">
           </div>
           <div id="statusContainer" class="hidden">
-            <select id="appointmentStatus" class="w-full rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none font-bold text-primary">
+            <select id="appointmentStatus" class="w-full rounded-xl border border-outline-variant py-2.5 px-3 text-sm focus:border-primary outline-none font-bold text-neutral-900 bg-white">
               <option>Agendado</option><option>Confirmado</option><option>Realizado</option><option>Cancelado</option><option>Faltou</option>
             </select>
           </div>
